@@ -1,0 +1,46 @@
+{
+  "name": "confluence-mcp-server",
+  "version": "0.2.0",
+  "description": "Confluence MCP Server",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "start": "node dist/index.js",
+    "format": "bunx biome format --write ./src",
+    "lint": "bunx biome lint ./src",
+    "check": "bunx biome check ./src",
+    "typecheck": "tsc --noEmit",
+    "inspect": "bunx @modelcontextprotocol/inspector bun ./dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "confluence",
+    "atlassian",
+    "cursor",
+    "claude",
+    "typescript",
+    "bun",
+    "biome"
+  ],
+  "author": "Stanislav Stepanenko <dev.stanislav.stepanenko@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/inspector": "^0.13.0",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "dotenv": "16.5.0",
+    "zod": "3.25.31"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.2.15",
+    "@types/node": "^20.11.28",
+    "typescript": "^5.4.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  }
+}

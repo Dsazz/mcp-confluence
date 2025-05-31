@@ -1,13 +1,23 @@
 {
-  "name": "confluence-mcp-server",
+  "name": "@dsazz/mcp-confluence",
   "version": "0.2.0",
-  "description": "Confluence MCP Server",
+  "description": "A powerful Model Context Protocol (MCP) server for Atlassian Confluence integration. Access Confluence spaces, search pages, and manage content directly from any MCP-compatible editor or application.",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "mcp-confluence": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
     "start": "node dist/index.js",
+    "prepublishOnly": "bun run build",
     "format": "bunx biome format --write ./src",
     "lint": "bunx biome lint ./src",
     "check": "bunx biome check ./src",
@@ -23,10 +33,24 @@
     "claude",
     "typescript",
     "bun",
-    "biome"
+    "biome",
+    "server",
+    "integration",
+    "api",
+    "documentation",
+    "wiki",
+    "collaboration"
   ],
   "author": "Stanislav Stepanenko <dev.stanislav.stepanenko@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dsazz/mcp-confluence.git"
+  },
+  "homepage": "https://github.com/Dsazz/mcp-confluence#readme",
+  "bugs": {
+    "url": "https://github.com/Dsazz/mcp-confluence/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/inspector": "^0.13.0",
     "@modelcontextprotocol/sdk": "^1.12.1",

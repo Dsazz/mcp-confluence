@@ -1,6 +1,6 @@
 import { BaseToolHandler } from "@core/tools/tool-handler.class";
 import type {
-  ConfluenceApiClient,
+  ConfluenceClient,
   GetSpacesResponse,
 } from "../../api/index";
 import type { GetSpacesParams } from "../tools.types";
@@ -9,7 +9,7 @@ export class ConfluenceGetSpacesHandler extends BaseToolHandler<
   GetSpacesParams,
   GetSpacesResponse
 > {
-  constructor(private confluenceClient: ConfluenceApiClient) {
+  constructor(private confluenceClient: ConfluenceClient) {
     super(
       "confluence",
       "confluence_get_spaces",

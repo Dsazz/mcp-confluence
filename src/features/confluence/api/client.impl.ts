@@ -1,29 +1,29 @@
-import type {
-  Space,
-  Page,
-  SearchResult,
-  Comment,
-  PaginationInfo,
-} from "./models.types";
-import type {
-  ConfluenceApiSpacesResponse,
-  ConfluenceApiSearchResponse,
-  ConfluenceApiCommentsResponse,
-} from "./responses.types";
-import type {
-  ConfluenceConfig,
-  ConfluenceAuthHeaders,
-} from "./config.types";
-import { ConfluenceHttpClientFactory } from "./http-client.factory";
-import { ConfluenceOperationRouter, type ConfluenceOperation } from "./operation.router";
 import { validateConfluenceConfig } from "./client-config.validator";
+import type { ConfluenceAuthHeaders, ConfluenceConfig } from "./config.types";
+import { ConfluenceHttpClientFactory } from "./http-client.factory";
+import type {
+  Comment,
+  Page,
+  PaginationInfo,
+  SearchResult,
+  Space,
+} from "./models.types";
+import {
+  type ConfluenceOperation,
+  ConfluenceOperationRouter,
+} from "./operation.router";
 import { createPaginationInfo } from "./pagination.helper";
 import {
-  buildGetPageParams,
-  buildSearchParams,
   buildGetCommentsParams,
+  buildGetPageParams,
   buildGetSpacesParams,
+  buildSearchParams,
 } from "./request.builder";
+import type {
+  ConfluenceApiCommentsResponse,
+  ConfluenceApiSearchResponse,
+  ConfluenceApiSpacesResponse,
+} from "./responses.types";
 
 export interface CreatePageData {
   spaceId: string;
@@ -121,7 +121,7 @@ export class ConfluenceClient implements ConfluenceApiClient {
    */
   private getHttpClientForOperation(operation: ConfluenceOperation) {
     const version = this.operationRouter.getVersionForOperation(operation);
-    return version === "v1" 
+    return version === "v1"
       ? this.httpClientFactory.createV1Client()
       : this.httpClientFactory.createV2Client();
   }
@@ -159,7 +159,7 @@ export class ConfluenceClient implements ConfluenceApiClient {
 
   async createPage(data: CreatePageData): Promise<Page> {
     const httpClient = this.getHttpClientForOperation("createPage");
-    
+
     return await httpClient.sendRequest<Page>({
       method: "POST",
       url: "pages",
@@ -170,7 +170,7 @@ export class ConfluenceClient implements ConfluenceApiClient {
 
   async updatePage(pageId: string, data: UpdatePageData): Promise<Page> {
     const httpClient = this.getHttpClientForOperation("updatePage");
-    
+
     return await httpClient.sendRequest<Page>({
       method: "PUT",
       url: `pages/${pageId}`,
@@ -213,12 +213,13 @@ export class ConfluenceClient implements ConfluenceApiClient {
     const httpClient = this.getHttpClientForOperation("getPageComments");
     const params = buildGetCommentsParams(options);
 
-    const response = await httpClient.sendRequest<ConfluenceApiCommentsResponse>({
-      method: "GET",
-      url: `pages/${pageId}/comments`,
-      headers: {} as ConfluenceAuthHeaders,
-      params,
-    });
+    const response =
+      await httpClient.sendRequest<ConfluenceApiCommentsResponse>({
+        method: "GET",
+        url: `pages/${pageId}/comments`,
+        headers: {} as ConfluenceAuthHeaders,
+        params,
+      });
 
     return {
       comments: response.results,

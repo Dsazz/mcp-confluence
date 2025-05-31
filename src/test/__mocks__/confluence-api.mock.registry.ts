@@ -1,20 +1,20 @@
 import type {
-  Page,
-  Space,
   Comment,
-  SearchResult,
+  Page,
   PaginationInfo,
   ResponseMetadata,
+  SearchResult,
+  Space,
 } from "@features/confluence/api/models.types";
 import type {
-  ConfluenceApiSpacesResponse,
   ConfluenceApiSearchResponse,
+  ConfluenceApiSpacesResponse,
   ToolErrorResponse,
 } from "@features/confluence/api/responses.types";
 import type {
   BuildableMockFactory,
-  MockFactory,
   ErrorMockFactory,
+  MockFactory,
 } from "./mock-factory.interfaces.js";
 
 // Confluence API Mock Factory Registry Interface
@@ -35,7 +35,11 @@ export interface ConfluenceApiMockRegistry {
 // HTTP Response Mock Factory Interface
 export interface HttpResponseMockFactory {
   success<T>(data: T, status?: number): HttpResponse<T>;
-  error(status: number, message: string, details?: Record<string, unknown>): HttpResponse<ErrorResponseData>;
+  error(
+    status: number,
+    message: string,
+    details?: Record<string, unknown>,
+  ): HttpResponse<ErrorResponseData>;
   notFound(resource: string): HttpResponse<ErrorResponseData>;
   unauthorized(message?: string): HttpResponse<ErrorResponseData>;
   forbidden(action: string, resource: string): HttpResponse<ErrorResponseData>;
@@ -76,4 +80,4 @@ export interface ConfluenceApiError {
   timestamp: string;
   requestId: string;
   context?: Record<string, unknown>;
-} 
+}

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { ConfluenceClient } from "../../features/confluence/api/client.impl";
+import { ConfluenceConfig } from "../../features/confluence/api/config.types";
 import { ConfluenceHttpClientFactory } from "../../features/confluence/api/http-client.factory";
 import { ConfluenceOperationRouter } from "../../features/confluence/api/operation.router";
-import { ConfluenceConfig } from "../../features/confluence/api/config.types";
 
 describe("API Client Integration", () => {
   let client: ConfluenceClient;
@@ -15,7 +15,7 @@ describe("API Client Integration", () => {
     validConfig = new ConfluenceConfig(
       "https://test.atlassian.net",
       "test-token-123",
-      "test@example.com"
+      "test@example.com",
     );
 
     // Initialize components
@@ -36,11 +36,13 @@ describe("API Client Integration", () => {
       const configWithWiki = new ConfluenceConfig(
         "https://test.atlassian.net/wiki",
         "test-token-123",
-        "test@example.com"
+        "test@example.com",
       );
       const clientWithWiki = new ConfluenceClient(configWithWiki);
-      
-      expect(clientWithWiki.getWebBaseUrl()).toBe("https://test.atlassian.net/wiki");
+
+      expect(clientWithWiki.getWebBaseUrl()).toBe(
+        "https://test.atlassian.net/wiki",
+      );
     });
 
     test("should handle URLs without /wiki path by adding it", () => {
@@ -48,11 +50,13 @@ describe("API Client Integration", () => {
       const configWithoutWiki = new ConfluenceConfig(
         "https://test.atlassian.net",
         "test-token-123",
-        "test@example.com"
+        "test@example.com",
       );
       const clientWithoutWiki = new ConfluenceClient(configWithoutWiki);
-      
-      expect(clientWithoutWiki.getWebBaseUrl()).toBe("https://test.atlassian.net/wiki");
+
+      expect(clientWithoutWiki.getWebBaseUrl()).toBe(
+        "https://test.atlassian.net/wiki",
+      );
     });
 
     test("should validate configuration on initialization", () => {
@@ -63,7 +67,7 @@ describe("API Client Integration", () => {
 
     test("should provide operation routing information", () => {
       const routingInfo = client.getRoutingInfo();
-      
+
       expect(routingInfo).toBeDefined();
       expect(routingInfo.operationDistribution).toBeDefined();
       expect(routingInfo.v1Operations).toBeDefined();
@@ -79,9 +83,11 @@ describe("API Client Integration", () => {
 
     test("should route CRUD operations to v2 API", () => {
       const getPageVersion = operationRouter.getVersionForOperation("getPage");
-      const createPageVersion = operationRouter.getVersionForOperation("createPage");
-      const updatePageVersion = operationRouter.getVersionForOperation("updatePage");
-      
+      const createPageVersion =
+        operationRouter.getVersionForOperation("createPage");
+      const updatePageVersion =
+        operationRouter.getVersionForOperation("updatePage");
+
       expect(getPageVersion).toBe("v2");
       expect(createPageVersion).toBe("v2");
       expect(updatePageVersion).toBe("v2");
@@ -92,7 +98,7 @@ describe("API Client Integration", () => {
     test("should create different HTTP clients for different API versions", () => {
       const v1Client = httpClientFactory.createV1Client();
       const v2Client = httpClientFactory.createV2Client();
-      
+
       expect(v1Client).toBeDefined();
       expect(v2Client).toBeDefined();
       expect(v1Client).not.toBe(v2Client);
@@ -102,8 +108,10 @@ describe("API Client Integration", () => {
       const invalidConfig = new ConfluenceConfig("invalid-url", "", "invalid");
 
       // Factory creation doesn't validate, but client usage will fail
-      expect(() => new ConfluenceHttpClientFactory(invalidConfig)).not.toThrow();
-      
+      expect(
+        () => new ConfluenceHttpClientFactory(invalidConfig),
+      ).not.toThrow();
+
       // The actual validation happens when making requests
       const factory = new ConfluenceHttpClientFactory(invalidConfig);
       expect(factory).toBeDefined();
@@ -112,7 +120,7 @@ describe("API Client Integration", () => {
     test("should configure clients with correct base URLs", () => {
       const v1Client = httpClientFactory.createV1Client();
       const v2Client = httpClientFactory.createV2Client();
-      
+
       // Both clients should be configured with the base URL
       expect(v1Client).toBeDefined();
       expect(v2Client).toBeDefined();
@@ -131,7 +139,9 @@ describe("API Client Integration", () => {
       };
 
       // This will make an HTTP request and fail with authentication error
-      await expect(client.searchPages("test query", searchOptions)).rejects.toThrow("Authentication failed");
+      await expect(
+        client.searchPages("test query", searchOptions),
+      ).rejects.toThrow("Authentication failed");
     });
 
     test("should build correct request parameters for getSpaces", async () => {
@@ -141,13 +151,17 @@ describe("API Client Integration", () => {
         start: 0,
       };
 
-      await expect(client.getSpaces(spacesOptions)).rejects.toThrow("Authentication failed");
+      await expect(client.getSpaces(spacesOptions)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should handle special characters in parameters", async () => {
       const queryWithSpecialChars = 'text ~ "test & special chars"';
-      
-      await expect(client.searchPages(queryWithSpecialChars)).rejects.toThrow("Authentication failed");
+
+      await expect(client.searchPages(queryWithSpecialChars)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should validate parameter constraints", async () => {
@@ -163,15 +177,21 @@ describe("API Client Integration", () => {
   describe("Response Processing and Pagination", () => {
     test("should handle pagination correctly in responses", async () => {
       // Test that pagination would be processed correctly if authenticated
-      await expect(client.getSpaces({ limit: 25 })).rejects.toThrow("Authentication failed");
+      await expect(client.getSpaces({ limit: 25 })).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should handle last page pagination correctly", async () => {
-      await expect(client.getSpaces({ limit: 25, start: 75 })).rejects.toThrow("Authentication failed");
+      await expect(client.getSpaces({ limit: 25, start: 75 })).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should correctly process search response", async () => {
-      await expect(client.searchPages("test query")).rejects.toThrow("Authentication failed");
+      await expect(client.searchPages("test query")).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should correctly process spaces response", async () => {
@@ -200,7 +220,7 @@ describe("API Client Integration", () => {
       const invalidAuthConfig = new ConfluenceConfig(
         "https://test.atlassian.net/wiki",
         "invalid-token",
-        "invalid@example.com"
+        "invalid@example.com",
       );
 
       const invalidClient = new ConfluenceClient(invalidAuthConfig);
@@ -222,7 +242,9 @@ describe("API Client Integration", () => {
         status: "current",
       };
 
-      await expect(client.createPage(createData)).rejects.toThrow("Authentication failed");
+      await expect(client.createPage(createData)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should update page with correct data structure", async () => {
@@ -243,7 +265,9 @@ describe("API Client Integration", () => {
         },
       };
 
-      await expect(client.updatePage("123456", updateData)).rejects.toThrow("Authentication failed");
+      await expect(client.updatePage("123456", updateData)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should handle validation errors in CRUD operations", async () => {
@@ -272,11 +296,15 @@ describe("API Client Integration", () => {
         },
       };
 
-      await expect(client.updatePage("123456", invalidUpdateData)).rejects.toThrow();
+      await expect(
+        client.updatePage("123456", invalidUpdateData),
+      ).rejects.toThrow();
     });
 
     test("should handle page comments retrieval", async () => {
-      await expect(client.getPageComments("123456")).rejects.toThrow("Authentication failed");
+      await expect(client.getPageComments("123456")).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should handle page comments with options", async () => {
@@ -286,14 +314,18 @@ describe("API Client Integration", () => {
         orderBy: "created" as const,
       };
 
-      await expect(client.getPageComments("123456", options)).rejects.toThrow("Authentication failed");
+      await expect(client.getPageComments("123456", options)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
   });
 
   describe("Integration Workflow Scenarios", () => {
     test("should support search → get page workflow", async () => {
       // Test that workflow would work if authenticated
-      await expect(client.searchPages("test")).rejects.toThrow("Authentication failed");
+      await expect(client.searchPages("test")).rejects.toThrow(
+        "Authentication failed",
+      );
     });
 
     test("should support get spaces → create page workflow", async () => {
@@ -314,7 +346,9 @@ describe("API Client Integration", () => {
         },
       };
 
-      await expect(client.createPage(createData)).rejects.toThrow("Authentication failed");
+      await expect(client.createPage(createData)).rejects.toThrow(
+        "Authentication failed",
+      );
     });
   });
-}); 
+});

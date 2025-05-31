@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { HttpError } from "../../../../core/errors/http.error";
 import { McpError } from "../../../../core/errors/mcp.error";
 
@@ -131,7 +131,7 @@ describe("HttpError", () => {
     test("should have readonly statusCode property", () => {
       const error = new HttpError("Test error", 404);
       expect(error.statusCode).toBe(404);
-      
+
       // Verify it's readonly (TypeScript compile-time check)
       const originalStatusCode = error.statusCode;
       expect(error.statusCode).toBe(originalStatusCode);
@@ -186,14 +186,17 @@ describe("HttpError", () => {
     });
 
     test("should be JSON.stringify compatible", () => {
-      const context = { url: "/api/users", headers: { "Authorization": "Bearer token" } };
+      const context = {
+        url: "/api/users",
+        headers: { Authorization: "Bearer token" },
+      };
       const error = new HttpError("Unauthorized", 401, context);
-      
+
       expect(() => JSON.stringify(error.toJSON())).not.toThrow();
-      
+
       const serialized = JSON.stringify(error.toJSON());
       const parsed = JSON.parse(serialized);
-      
+
       expect(parsed.name).toBe("HttpError");
       expect(parsed.statusCode).toBe(401);
       expect(parsed.context).toEqual(context);
@@ -285,4 +288,4 @@ describe("HttpError", () => {
       expect(error.context?.headers).toBeNull();
     });
   });
-}); 
+});

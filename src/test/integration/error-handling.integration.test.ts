@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
-import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
-import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
-import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
-import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
-import { ConfluenceConfig } from "../../features/confluence/api/config.types";
-import { ConfluenceClient } from "../../features/confluence/api/client.impl";
-import { ValidationError } from "../../core/errors/validation.error";
-import { McpError } from "../../core/errors/mcp.error";
 import { normalizeError } from "../../core/errors/index";
+import { McpError } from "../../core/errors/mcp.error";
+import { ValidationError } from "../../core/errors/validation.error";
+import { ConfluenceClient } from "../../features/confluence/api/client.impl";
+import { ConfluenceConfig } from "../../features/confluence/api/config.types";
+import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
+import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
+import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
+import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
+import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
 
 describe("Error Handling Integration", () => {
   let mockConfluenceClient: ConfluenceClient;
@@ -25,7 +25,7 @@ describe("Error Handling Integration", () => {
     const mockConfig = new ConfluenceConfig(
       "https://test.atlassian.net/wiki",
       "test-token",
-      "test@example.com"
+      "test@example.com",
     );
     mockConfluenceClient = new ConfluenceClient(mockConfig);
 
@@ -64,23 +64,31 @@ describe("Error Handling Integration", () => {
 
     test("should handle invalid parameter types", async () => {
       // Test invalid pageId type
-      const getPageResult = await handlers.getPage.handle({ pageId: 123 as never });
+      const getPageResult = await handlers.getPage.handle({
+        pageId: 123 as never,
+      });
       expect(getPageResult.success).toBe(false);
-      expect(getPageResult.error).toContain("pageId is required and must be a string");
+      expect(getPageResult.error).toContain(
+        "pageId is required and must be a string",
+      );
 
       // Test invalid query type
-      const searchResult = await handlers.searchPages.handle({ query: null as never });
+      const searchResult = await handlers.searchPages.handle({
+        query: null as never,
+      });
       expect(searchResult.success).toBe(false);
       expect(searchResult.error).toContain("query is required");
 
       // Test invalid spaceId type
-      const createResult = await handlers.createPage.handle({ 
+      const createResult = await handlers.createPage.handle({
         spaceId: [] as never,
         title: "Test",
-        content: "Test content"
+        content: "Test content",
       });
       expect(createResult.success).toBe(false);
-      expect(createResult.error).toContain("spaceId is required and must be a string");
+      expect(createResult.error).toContain(
+        "spaceId is required and must be a string",
+      );
     });
 
     test("should handle invalid parameter values", async () => {
@@ -99,7 +107,9 @@ describe("Error Handling Integration", () => {
       expect(getSpacesResult3.error).toContain("Invalid start parameter");
 
       // Test invalid type values
-      const getSpacesResult4 = await handlers.getSpaces.handle({ type: "invalid" as never });
+      const getSpacesResult4 = await handlers.getSpaces.handle({
+        type: "invalid" as never,
+      });
       expect(getSpacesResult4.success).toBe(false);
       expect(getSpacesResult4.error).toContain("Invalid type parameter");
     });
@@ -116,10 +126,10 @@ describe("Error Handling Integration", () => {
       expect(searchResult.error).toContain("query is required");
 
       // Test empty spaceId
-      const createResult = await handlers.createPage.handle({ 
+      const createResult = await handlers.createPage.handle({
         spaceId: "",
         title: "Test",
-        content: "Test content"
+        content: "Test content",
       });
       expect(createResult.success).toBe(false);
       expect(createResult.error).toContain("spaceId is required");
@@ -137,10 +147,10 @@ describe("Error Handling Integration", () => {
       expect(searchResult.error).toContain("query is required");
 
       // Test whitespace-only title
-      const createResult = await handlers.createPage.handle({ 
+      const createResult = await handlers.createPage.handle({
         spaceId: "TEST",
         title: "   ",
-        content: "Test content"
+        content: "Test content",
       });
       expect(createResult.success).toBe(false);
       expect(createResult.error).toContain("title is required");
@@ -150,7 +160,9 @@ describe("Error Handling Integration", () => {
   describe("API Client Error Propagation", () => {
     test("should propagate HTTP 404 errors", async () => {
       // Test with non-existent page ID
-      const getPageResult = await handlers.getPage.handle({ pageId: "non-existent-page" });
+      const getPageResult = await handlers.getPage.handle({
+        pageId: "non-existent-page",
+      });
       expect(getPageResult.success).toBe(false);
       expect(getPageResult.error).toBeDefined();
     });
@@ -160,7 +172,7 @@ describe("Error Handling Integration", () => {
       const invalidConfig = new ConfluenceConfig(
         "https://test.atlassian.net/wiki",
         "invalid-token",
-        "invalid@example.com"
+        "invalid@example.com",
       );
       const invalidClient = new ConfluenceClient(invalidConfig);
       const invalidHandler = new ConfluenceGetSpacesHandler(invalidClient);
@@ -172,21 +184,27 @@ describe("Error Handling Integration", () => {
 
     test("should propagate HTTP 403 permission errors", async () => {
       // Test with restricted page access
-      const getPageResult = await handlers.getPage.handle({ pageId: "restricted-page" });
+      const getPageResult = await handlers.getPage.handle({
+        pageId: "restricted-page",
+      });
       expect(getPageResult.success).toBe(false);
       expect(getPageResult.error).toBeDefined();
     });
 
     test("should handle network timeout errors", async () => {
       // Test with timeout scenario
-      const getPageResult = await handlers.getPage.handle({ pageId: "timeout-test" });
+      const getPageResult = await handlers.getPage.handle({
+        pageId: "timeout-test",
+      });
       expect(getPageResult.success).toBe(false);
       expect(getPageResult.error).toBeDefined();
     });
 
     test("should handle malformed API responses", async () => {
       // Test with invalid response format
-      const searchResult = await handlers.searchPages.handle({ query: "malformed-response-test" });
+      const searchResult = await handlers.searchPages.handle({
+        query: "malformed-response-test",
+      });
       expect(searchResult.success).toBe(false);
       expect(searchResult.error).toBeDefined();
     });
@@ -203,20 +221,28 @@ describe("Error Handling Integration", () => {
     test("should handle missing authentication", () => {
       // Configuration creation doesn't validate, but usage will fail
       expect(() => {
-        new ConfluenceConfig("https://test.atlassian.net/wiki", "", "email@example.com");
+        new ConfluenceConfig(
+          "https://test.atlassian.net/wiki",
+          "",
+          "email@example.com",
+        );
       }).not.toThrow();
     });
 
     test("should handle invalid email format", () => {
       // Configuration creation doesn't validate, but usage will fail
       expect(() => {
-        new ConfluenceConfig("https://test.atlassian.net/wiki", "token", "invalid-email");
+        new ConfluenceConfig(
+          "https://test.atlassian.net/wiki",
+          "token",
+          "invalid-email",
+        );
       }).not.toThrow();
     });
 
     test("should validate configuration on client creation", () => {
       const invalidConfig = new ConfluenceConfig("", "", "");
-      
+
       expect(() => {
         new ConfluenceClient(invalidConfig);
       }).toThrow();
@@ -225,7 +251,7 @@ describe("Error Handling Integration", () => {
     test("should provide detailed validation errors", () => {
       const invalidConfig = new ConfluenceConfig("", "", "");
       const validation = invalidConfig.validate();
-      
+
       expect(validation.isValid).toBe(false);
       expect(validation.errors.length).toBeGreaterThan(0);
       expect(validation.errors).toContain("hostUrl is required");
@@ -240,7 +266,7 @@ describe("Error Handling Integration", () => {
         handlers.getPage.handle({}),
         handlers.searchPages.handle({}),
         handlers.createPage.handle({}),
-        handlers.updatePage.handle({})
+        handlers.updatePage.handle({}),
       ]);
 
       for (const result of results) {
@@ -252,8 +278,10 @@ describe("Error Handling Integration", () => {
     });
 
     test("should include error context in responses", async () => {
-      const getPageResult = await handlers.getPage.handle({ pageId: "invalid-id" });
-      
+      const getPageResult = await handlers.getPage.handle({
+        pageId: "invalid-id",
+      });
+
       expect(getPageResult.success).toBe(false);
       expect(getPageResult.error).toBeDefined();
       expect(typeof getPageResult.error).toBe("string");
@@ -265,7 +293,7 @@ describe("Error Handling Integration", () => {
         spaceId: "TEST",
         title: "",
         content: "",
-        status: "invalid" as never
+        status: "invalid" as never,
       });
 
       expect(createResult.success).toBe(false);
@@ -278,13 +306,13 @@ describe("Error Handling Integration", () => {
       const sensitiveConfig = new ConfluenceConfig(
         "https://test.atlassian.net/wiki",
         "sensitive-token-12345",
-        "user@example.com"
+        "user@example.com",
       );
       const sensitiveClient = new ConfluenceClient(sensitiveConfig);
       const sensitiveHandler = new ConfluenceGetSpacesHandler(sensitiveClient);
 
       const result = await sensitiveHandler.handle({});
-      
+
       // Error should not contain the sensitive token
       if (!result.success) {
         expect(result.error).not.toContain("sensitive-token-12345");
@@ -298,7 +326,7 @@ describe("Error Handling Integration", () => {
       const results = await Promise.all([
         handlers.getSpaces.handle({}),
         handlers.getSpaces.handle({}),
-        handlers.getSpaces.handle({})
+        handlers.getSpaces.handle({}),
       ]);
 
       // All should fail gracefully with authentication errors
@@ -324,7 +352,7 @@ describe("Error Handling Integration", () => {
         handlers.getPage.handle({}),
         handlers.searchPages.handle({}),
         handlers.createPage.handle({}),
-        handlers.updatePage.handle({})
+        handlers.updatePage.handle({}),
       ]);
 
       // All should fail gracefully
@@ -354,7 +382,7 @@ describe("Error Handling Integration", () => {
   describe("Custom Error Types", () => {
     test("should handle ValidationError instances", () => {
       const validationError = new ValidationError("Test validation error");
-      
+
       expect(validationError).toBeInstanceOf(ValidationError);
       expect(validationError).toBeInstanceOf(McpError);
       expect(validationError.message).toBe("Test validation error");
@@ -363,7 +391,7 @@ describe("Error Handling Integration", () => {
 
     test("should handle McpError instances", () => {
       const mcpError = new McpError("Test MCP error", "TEST_ERROR");
-      
+
       expect(mcpError).toBeInstanceOf(McpError);
       expect(mcpError.message).toBe("Test MCP error");
       expect(mcpError.code).toBe("TEST_ERROR");
@@ -391,7 +419,7 @@ describe("Error Handling Integration", () => {
     test("should preserve error information in string format", () => {
       const originalError = new Error("Original error");
       const normalizedError = normalizeError(originalError);
-      
+
       expect(typeof normalizedError).toBe("string");
       expect(normalizedError).toBe("Original error");
     });
@@ -399,7 +427,7 @@ describe("Error Handling Integration", () => {
     test("should handle unknown error types", () => {
       const unknownError = 42;
       const normalizedError = normalizeError(unknownError);
-      
+
       expect(typeof normalizedError).toBe("string");
       expect(normalizedError).toBe("42");
     });
@@ -409,7 +437,7 @@ describe("Error Handling Integration", () => {
     test("should log errors appropriately", async () => {
       // Test that errors are logged (this would require log capture in real implementation)
       const getPageResult = await handlers.getPage.handle({});
-      
+
       expect(getPageResult.success).toBe(false);
       // In a real implementation, we would verify that the error was logged
     });
@@ -417,7 +445,7 @@ describe("Error Handling Integration", () => {
     test("should include error context in logs", async () => {
       // Test that error context is included in logs
       const searchResult = await handlers.searchPages.handle({ query: "" });
-      
+
       expect(searchResult.success).toBe(false);
       // In a real implementation, we would verify that context was logged
     });
@@ -435,7 +463,7 @@ describe("Error Handling Integration", () => {
       // Test error counting/metrics (would require metrics system)
       await handlers.getPage.handle({});
       await handlers.searchPages.handle({});
-      
+
       // In a real implementation, we would verify error metrics were updated
       expect(true).toBe(true); // Placeholder
     });
@@ -454,7 +482,7 @@ describe("Error Handling Integration", () => {
     test("should handle tool execution errors", async () => {
       // Test that tool execution errors are caught and formatted
       const result = await handlers.getPage.handle({ pageId: "error-test" });
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
       expect(typeof result.error).toBe("string");
@@ -481,7 +509,7 @@ describe("Error Handling Integration", () => {
         handlers.getPage.handle({}),
         handlers.searchPages.handle({}),
         handlers.createPage.handle({}),
-        handlers.updatePage.handle({})
+        handlers.updatePage.handle({}),
       ]);
 
       // All should fail gracefully
@@ -495,4 +523,4 @@ describe("Error Handling Integration", () => {
       expect(validResult.error).toBeDefined();
     });
   });
-}); 
+});

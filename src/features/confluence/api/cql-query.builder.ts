@@ -88,7 +88,10 @@ export class CqlQueryBuilder {
   /**
    * Static factory method for creating a CQL query builder
    */
-  static create(query: string, options: SearchPagesOptions = {}): CqlQueryBuilder {
+  static create(
+    query: string,
+    options: SearchPagesOptions = {},
+  ): CqlQueryBuilder {
     return new CqlQueryBuilder(query, options);
   }
 
@@ -98,4 +101,4 @@ export class CqlQueryBuilder {
   static buildQuery(query: string, options: SearchPagesOptions = {}): string {
     return new CqlQueryBuilder(query, options).build();
   }
-} 
+}

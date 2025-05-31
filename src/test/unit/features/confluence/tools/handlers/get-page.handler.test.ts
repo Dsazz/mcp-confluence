@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, mock } from "bun:test";
-import { ConfluenceGetPageHandler } from "@features/confluence/tools/handlers/get-page.handler";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 import type { ConfluenceClient } from "@features/confluence/api/index";
+import { ConfluenceGetPageHandler } from "@features/confluence/tools/handlers/get-page.handler";
 import type { GetPageParams } from "@features/confluence/tools/tools.types";
 import { mockRegistry } from "./../../../../../__mocks__/index";
 
@@ -12,29 +12,35 @@ describe("ConfluenceGetPageHandler", () => {
     // Create a mock ConfluenceClient with all required properties
     mockConfluenceClient = {
       getPage: mock(() => Promise.resolve(mockRegistry.pages.create())),
-      getPageComments: mock(() => Promise.resolve({
-        comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
-      })),
+      getPageComments: mock(() =>
+        Promise.resolve({
+          comments: mockRegistry.comments.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
+      ),
       getWebBaseUrl: mock(() => "https://test.atlassian.net/wiki"),
-      getSpaces: mock(() => Promise.resolve({
-        spaces: mockRegistry.spaces.createMany(3),
-        pagination: mockRegistry.pagination.create()
-      })),
+      getSpaces: mock(() =>
+        Promise.resolve({
+          spaces: mockRegistry.spaces.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
+      ),
       createPage: mock(() => Promise.resolve(mockRegistry.pages.create())),
       updatePage: mock(() => Promise.resolve(mockRegistry.pages.create())),
-      searchPages: mock(() => Promise.resolve({
-        results: mockRegistry.searchResults.createMany(3),
-        pagination: mockRegistry.pagination.create(),
-        totalSize: 3,
-        searchDuration: 50
-      })),
+      searchPages: mock(() =>
+        Promise.resolve({
+          results: mockRegistry.searchResults.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+          totalSize: 3,
+          searchDuration: 50,
+        }),
+      ),
       // Required internal properties
       httpClient: {} as object,
       validateConfig: mock(() => {}),
-      buildSearchQuery: mock(() => "text ~ \"test\"")
+      buildSearchQuery: mock(() => 'text ~ "test"'),
     } as unknown as ConfluenceClient;
-    
+
     handler = new ConfluenceGetPageHandler(mockConfluenceClient);
   });
 
@@ -42,7 +48,9 @@ describe("ConfluenceGetPageHandler", () => {
     test("should initialize with correct properties", () => {
       expect(handler.feature).toBe("confluence");
       expect(handler.name).toBe("confluence_get_page");
-      expect(handler.description).toBe("Get detailed information about a specific Confluence page in human-readable format");
+      expect(handler.description).toBe(
+        "Get detailed information about a specific Confluence page in human-readable format",
+      );
     });
   });
 
@@ -69,21 +77,27 @@ describe("ConfluenceGetPageHandler", () => {
       const params = {};
       const response = await handler.handle(params);
       expect(response.success).toBe(false);
-      expect(response.error).toContain("pageId is required and must be a string");
+      expect(response.error).toContain(
+        "pageId is required and must be a string",
+      );
     });
 
     test("should throw error when pageId is not a string", async () => {
       const params = { pageId: 123 };
       const response = await handler.handle(params);
       expect(response.success).toBe(false);
-      expect(response.error).toContain("pageId is required and must be a string");
+      expect(response.error).toContain(
+        "pageId is required and must be a string",
+      );
     });
 
     test("should throw error when pageId is empty string", async () => {
       const params = { pageId: "" };
       const response = await handler.handle(params);
       expect(response.success).toBe(false);
-      expect(response.error).toContain("pageId is required and must be a string");
+      expect(response.error).toContain(
+        "pageId is required and must be a string",
+      );
     });
 
     test("should accept valid minimal parameters", async () => {
@@ -99,16 +113,18 @@ describe("ConfluenceGetPageHandler", () => {
       const mockPage = mockRegistry.pages.create();
       const mockComments = {
         comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
+        pagination: mockRegistry.pagination.create(),
       };
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
-      mockConfluenceClient.getPageComments = mock(() => Promise.resolve(mockComments));
+      mockConfluenceClient.getPageComments = mock(() =>
+        Promise.resolve(mockComments),
+      );
 
       const params: GetPageParams = {
         pageId: "123456",
         includeContent: true,
         includeComments: true,
-        expand: ["body.storage", "version"]
+        expand: ["body.storage", "version"],
       };
       const response = await handler.handle(params);
       expect(response.success).toBe(true);
@@ -124,14 +140,14 @@ describe("ConfluenceGetPageHandler", () => {
       const params: GetPageParams = {
         pageId: "123456",
         includeContent: true,
-        expand: ["body.storage"]
+        expand: ["body.storage"],
       };
 
       await handler.handle(params);
 
       expect(getPageMock).toHaveBeenCalledWith("123456", {
         includeContent: true,
-        expand: ["body.storage"]
+        expand: ["body.storage"],
       });
     });
 
@@ -139,16 +155,16 @@ describe("ConfluenceGetPageHandler", () => {
       const mockPage = mockRegistry.pages.create();
       const mockComments = {
         comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
+        pagination: mockRegistry.pagination.create(),
       };
       const getPageCommentsMock = mock(() => Promise.resolve(mockComments));
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
       mockConfluenceClient.getPageComments = getPageCommentsMock;
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeComments: true
+        includeComments: true,
       };
 
       await handler.handle(params);
@@ -158,17 +174,19 @@ describe("ConfluenceGetPageHandler", () => {
 
     test("should not call getPageComments when includeComments is false", async () => {
       const mockPage = mockRegistry.pages.create();
-      const getPageCommentsMock = mock(() => Promise.resolve({
-        comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
-      }));
-      
+      const getPageCommentsMock = mock(() =>
+        Promise.resolve({
+          comments: mockRegistry.comments.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
+      );
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
       mockConfluenceClient.getPageComments = getPageCommentsMock;
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeComments: false
+        includeComments: false,
       };
 
       await handler.handle(params);
@@ -178,16 +196,18 @@ describe("ConfluenceGetPageHandler", () => {
 
     test("should not call getPageComments when includeComments is undefined", async () => {
       const mockPage = mockRegistry.pages.create();
-      const getPageCommentsMock = mock(() => Promise.resolve({
-        comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
-      }));
-      
+      const getPageCommentsMock = mock(() =>
+        Promise.resolve({
+          comments: mockRegistry.comments.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
+      );
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
       mockConfluenceClient.getPageComments = getPageCommentsMock;
 
       const params: GetPageParams = {
-        pageId: "123456"
+        pageId: "123456",
       };
 
       await handler.handle(params);
@@ -222,13 +242,15 @@ describe("ConfluenceGetPageHandler", () => {
     test("should handle getPageComments errors gracefully", async () => {
       const mockPage = mockRegistry.pages.create();
       const commentsError = new Error("Comments API error");
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
-      mockConfluenceClient.getPageComments = mock(() => Promise.reject(commentsError));
+      mockConfluenceClient.getPageComments = mock(() =>
+        Promise.reject(commentsError),
+      );
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeComments: true
+        includeComments: true,
       };
 
       const response = await handler.handle(params);
@@ -241,9 +263,9 @@ describe("ConfluenceGetPageHandler", () => {
     test("should return formatted string response", async () => {
       const mockPage = mockRegistry.pages.create({
         title: "Test Page",
-        id: "123456"
+        id: "123456",
       });
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
 
       const params: GetPageParams = { pageId: "123456" };
@@ -258,15 +280,21 @@ describe("ConfluenceGetPageHandler", () => {
       const mockPage = mockRegistry.pages.create();
       const mockComments = {
         comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create({ size: 5, limit: 1, start: 0 })
+        pagination: mockRegistry.pagination.create({
+          size: 5,
+          limit: 1,
+          start: 0,
+        }),
       };
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
-      mockConfluenceClient.getPageComments = mock(() => Promise.resolve(mockComments));
+      mockConfluenceClient.getPageComments = mock(() =>
+        Promise.resolve(mockComments),
+      );
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeComments: true
+        includeComments: true,
       };
 
       const response = await handler.handle(params);
@@ -279,15 +307,21 @@ describe("ConfluenceGetPageHandler", () => {
       const mockPage = mockRegistry.pages.create();
       const mockComments = {
         comments: [],
-        pagination: mockRegistry.pagination.create({ size: 0, limit: 1, start: 0 })
+        pagination: mockRegistry.pagination.create({
+          size: 0,
+          limit: 1,
+          start: 0,
+        }),
       };
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
-      mockConfluenceClient.getPageComments = mock(() => Promise.resolve(mockComments));
+      mockConfluenceClient.getPageComments = mock(() =>
+        Promise.resolve(mockComments),
+      );
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeComments: true
+        includeComments: true,
       };
 
       const response = await handler.handle(params);
@@ -300,9 +334,9 @@ describe("ConfluenceGetPageHandler", () => {
     test("should build page context with space information", async () => {
       const mockPage = mockRegistry.pages.create({
         spaceId: "SPACE123",
-        title: "Test Page"
+        title: "Test Page",
       });
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
 
       const params: GetPageParams = { pageId: "123456" };
@@ -320,10 +354,10 @@ describe("ConfluenceGetPageHandler", () => {
         _links: {
           webui: "/pages/123456",
           editui: "/pages/123456/edit",
-          self: "/wiki/api/v2/pages/123456"
-        }
+          self: "/wiki/api/v2/pages/123456",
+        },
       });
-      
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
 
       const params: GetPageParams = { pageId: "123456" };
@@ -345,17 +379,19 @@ describe("ConfluenceGetPageHandler", () => {
 
       expect(getPageMock).toHaveBeenCalledWith("123456", {
         includeContent: true,
-        expand: undefined
+        expand: undefined,
       });
     });
 
     test("should default includeComments to false when not specified", async () => {
       const mockPage = mockRegistry.pages.create();
-      const getPageCommentsMock = mock(() => Promise.resolve({
-        comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create()
-      }));
-      
+      const getPageCommentsMock = mock(() =>
+        Promise.resolve({
+          comments: mockRegistry.comments.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
+      );
+
       mockConfluenceClient.getPage = mock(() => Promise.resolve(mockPage));
       mockConfluenceClient.getPageComments = getPageCommentsMock;
 
@@ -372,14 +408,14 @@ describe("ConfluenceGetPageHandler", () => {
 
       const params: GetPageParams = {
         pageId: "123456",
-        includeContent: false
+        includeContent: false,
       };
       await handler.handle(params);
 
       expect(getPageMock).toHaveBeenCalledWith("123456", {
         includeContent: false,
-        expand: undefined
+        expand: undefined,
       });
     });
   });
-}); 
+});

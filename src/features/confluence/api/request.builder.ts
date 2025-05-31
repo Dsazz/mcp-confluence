@@ -1,13 +1,19 @@
-import type { GetPageOptions, SearchPagesOptions, GetPageCommentsOptions } from "./client.impl";
-import { createPaginationParams } from "./pagination.helper";
+import type {
+  GetPageCommentsOptions,
+  GetPageOptions,
+  SearchPagesOptions,
+} from "./client.impl";
 import { CqlQueryBuilder } from "./cql-query.builder";
+import { createPaginationParams } from "./pagination.helper";
 
 /**
  * Build parameters for getPage requests
  * @param options - Page retrieval options
  * @returns Request parameters
  */
-export function buildGetPageParams(options: GetPageOptions): Record<string, string | number> {
+export function buildGetPageParams(
+  options: GetPageOptions,
+): Record<string, string | number> {
   const params: Record<string, string | number> = {};
 
   if (options.includeContent !== false) {
@@ -28,8 +34,8 @@ export function buildGetPageParams(options: GetPageOptions): Record<string, stri
  * @returns Request parameters
  */
 export function buildSearchParams(
-  query: string, 
-  options: SearchPagesOptions
+  query: string,
+  options: SearchPagesOptions,
 ): Record<string, string | number> {
   return {
     cql: CqlQueryBuilder.buildQuery(query, options),
@@ -42,11 +48,14 @@ export function buildSearchParams(
  * @param options - Comment retrieval options
  * @returns Request parameters
  */
-export function buildGetCommentsParams(options: GetPageCommentsOptions): Record<string, string | number> {
+export function buildGetCommentsParams(
+  options: GetPageCommentsOptions,
+): Record<string, string | number> {
   const params = createPaginationParams(options);
 
   if (options.orderBy) {
-    params.sort = options.orderBy === "created" ? "created-date" : "modified-date";
+    params.sort =
+      options.orderBy === "created" ? "created-date" : "modified-date";
   }
 
   return params;
@@ -57,7 +66,11 @@ export function buildGetCommentsParams(options: GetPageCommentsOptions): Record<
  * @param options - Space retrieval options
  * @returns Request parameters
  */
-export function buildGetSpacesParams(options: { type?: string; limit?: number; start?: number }): Record<string, string | number> {
+export function buildGetSpacesParams(options: {
+  type?: string;
+  limit?: number;
+  start?: number;
+}): Record<string, string | number> {
   const params = createPaginationParams(options);
 
   if (options.type) {
@@ -65,4 +78,4 @@ export function buildGetSpacesParams(options: { type?: string; limit?: number; s
   }
 
   return params;
-} 
+}

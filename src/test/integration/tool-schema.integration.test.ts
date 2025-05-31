@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import type { ConfluenceClient } from "../../features/confluence/api/index";
 import type { GetSpacesResponse } from "../../features/confluence/api/responses.types";
 import type { SearchPagesResponse } from "../../features/confluence/api/responses.types";
+import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
 import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
 import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
 import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
-import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
 import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
 import { mockRegistry } from "../__mocks__/index";
 
@@ -22,23 +22,26 @@ describe("Tool Schema Integration", () => {
     // Create mock Confluence client
     const mockConfluenceClient: ConfluenceClient = {
       getPage: () => Promise.resolve(mockRegistry.pages.create()),
-      getPageComments: () => Promise.resolve({
-        comments: mockRegistry.comments.createMany(3),
-        pagination: mockRegistry.pagination.create(),
-      }),
+      getPageComments: () =>
+        Promise.resolve({
+          comments: mockRegistry.comments.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
       getWebBaseUrl: () => "https://test.atlassian.net/wiki",
-      getSpaces: () => Promise.resolve({
-        spaces: mockRegistry.spaces.createMany(3),
-        pagination: mockRegistry.pagination.create(),
-      }),
+      getSpaces: () =>
+        Promise.resolve({
+          spaces: mockRegistry.spaces.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+        }),
       createPage: () => Promise.resolve(mockRegistry.pages.create()),
       updatePage: () => Promise.resolve(mockRegistry.pages.create()),
-      searchPages: () => Promise.resolve({
-        results: mockRegistry.searchResults.createMany(3),
-        pagination: mockRegistry.pagination.create(),
-        totalSize: 3,
-        searchDuration: 50,
-      }),
+      searchPages: () =>
+        Promise.resolve({
+          results: mockRegistry.searchResults.createMany(3),
+          pagination: mockRegistry.pagination.create(),
+          totalSize: 3,
+          searchDuration: 50,
+        }),
       httpClient: {},
       validateConfig: () => {},
       buildSearchQuery: () => 'text ~ "test"',
@@ -59,23 +62,33 @@ describe("Tool Schema Integration", () => {
       // Verify each handler has required metadata
       expect(handlers.getPage.feature).toBe("confluence");
       expect(handlers.getPage.name).toBe("confluence_get_page");
-      expect(handlers.getPage.description).toContain("Get detailed information about a specific Confluence page");
+      expect(handlers.getPage.description).toContain(
+        "Get detailed information about a specific Confluence page",
+      );
 
       expect(handlers.getSpaces.feature).toBe("confluence");
       expect(handlers.getSpaces.name).toBe("confluence_get_spaces");
-      expect(handlers.getSpaces.description).toContain("List user's accessible Confluence spaces");
+      expect(handlers.getSpaces.description).toContain(
+        "List user's accessible Confluence spaces",
+      );
 
       expect(handlers.searchPages.feature).toBe("confluence");
       expect(handlers.searchPages.name).toBe("confluence_search_pages");
-      expect(handlers.searchPages.description).toContain("Search for pages using CQL (Confluence Query Language)");
+      expect(handlers.searchPages.description).toContain(
+        "Search for pages using CQL (Confluence Query Language)",
+      );
 
       expect(handlers.createPage.feature).toBe("confluence");
       expect(handlers.createPage.name).toBe("confluence_create_page");
-      expect(handlers.createPage.description).toContain("Create a new page in Confluence");
+      expect(handlers.createPage.description).toContain(
+        "Create a new page in Confluence",
+      );
 
       expect(handlers.updatePage.feature).toBe("confluence");
       expect(handlers.updatePage.name).toBe("confluence_update_page");
-      expect(handlers.updatePage.description).toContain("Update an existing page in Confluence");
+      expect(handlers.updatePage.description).toContain(
+        "Update an existing page in Confluence",
+      );
     });
 
     test("should validate required parameters for each tool", async () => {
@@ -106,21 +119,27 @@ describe("Tool Schema Integration", () => {
         pageId: 123, // Should be string
       });
       expect(getPageResult.success).toBe(false);
-      expect(getPageResult.error).toContain("pageId is required and must be a string");
+      expect(getPageResult.error).toContain(
+        "pageId is required and must be a string",
+      );
 
       const searchResult = await handlers.searchPages.handle({
         query: 123, // Should be string
       });
       expect(searchResult.success).toBe(false);
-      expect(searchResult.error).toContain("query is required and must be a non-empty CQL string");
+      expect(searchResult.error).toContain(
+        "query is required and must be a non-empty CQL string",
+      );
 
       const createResult = await handlers.createPage.handle({
         spaceId: 123, // Should be string
         title: "Test",
-        content: "Test"
+        content: "Test",
       });
       expect(createResult.success).toBe(false);
-      expect(createResult.error).toContain("spaceId is required and must be a string");
+      expect(createResult.error).toContain(
+        "spaceId is required and must be a string",
+      );
     });
 
     test("should validate optional parameter constraints", async () => {
@@ -155,7 +174,7 @@ describe("Tool Schema Integration", () => {
     test("should return consistent response structure for successful operations", async () => {
       // Test successful responses have consistent structure
       const getPageResult = await handlers.getPage.handle({
-        pageId: "123456"
+        pageId: "123456",
       });
       expect(getPageResult.success).toBe(true);
       expect(getPageResult.data).toBeDefined();
@@ -167,7 +186,7 @@ describe("Tool Schema Integration", () => {
       expect(getSpacesResult.error).toBeUndefined();
 
       const searchResult = await handlers.searchPages.handle({
-        query: "test"
+        query: "test",
       });
       expect(searchResult.success).toBe(true);
       expect(searchResult.data).toBeDefined();
@@ -192,7 +211,7 @@ describe("Tool Schema Integration", () => {
     test("should include required fields in successful responses", async () => {
       // Test that successful responses include expected fields
       const getPageResult = await handlers.getPage.handle({
-        pageId: "123456"
+        pageId: "123456",
       });
       expect(getPageResult.success).toBe(true);
       const pageData = getPageResult.data as string;
@@ -207,7 +226,7 @@ describe("Tool Schema Integration", () => {
       expect(spacesData.summary).toBeDefined();
 
       const searchResult = await handlers.searchPages.handle({
-        query: "test"
+        query: "test",
       });
       expect(searchResult.success).toBe(true);
       const searchData = searchResult.data as SearchPagesResponse;
@@ -239,7 +258,9 @@ describe("Tool Schema Integration", () => {
         // Missing both title and content
       });
       expect(updateResult1.success).toBe(false);
-      expect(updateResult1.error).toContain("At least one of 'title' or 'content' must be provided");
+      expect(updateResult1.error).toContain(
+        "At least one of 'title' or 'content' must be provided",
+      );
 
       // Test with title only - should succeed
       const updateResult2 = await handlers.updatePage.handle({
@@ -341,4 +362,4 @@ describe("Tool Schema Integration", () => {
       }
     });
   });
-}); 
+});

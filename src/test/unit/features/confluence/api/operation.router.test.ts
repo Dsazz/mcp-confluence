@@ -1,5 +1,9 @@
-import { describe, test, expect, beforeEach } from "bun:test";
-import { ConfluenceOperationRouter, defaultOperationRouter, type ConfluenceOperation } from "../../../../../features/confluence/api/operation.router";
+import { beforeEach, describe, expect, test } from "bun:test";
+import {
+  type ConfluenceOperation,
+  ConfluenceOperationRouter,
+  defaultOperationRouter,
+} from "../../../../../features/confluence/api/operation.router";
 
 describe("ConfluenceOperationRouter", () => {
   let router: ConfluenceOperationRouter;
@@ -25,8 +29,8 @@ describe("ConfluenceOperationRouter", () => {
       const customRouter = new ConfluenceOperationRouter({
         customMappings: {
           search: "v2",
-          getSpaces: "v1"
-        }
+          getSpaces: "v1",
+        },
       });
 
       expect(customRouter.getVersionForOperation("search")).toBe("v2");
@@ -37,11 +41,15 @@ describe("ConfluenceOperationRouter", () => {
 
     test("should accept custom fallback version", () => {
       const customRouter = new ConfluenceOperationRouter({
-        fallbackVersion: "v1"
+        fallbackVersion: "v1",
       });
 
       // Test with a non-existent operation
-      expect(customRouter.getVersionForOperation("nonExistent" as ConfluenceOperation)).toBe("v1");
+      expect(
+        customRouter.getVersionForOperation(
+          "nonExistent" as ConfluenceOperation,
+        ),
+      ).toBe("v1");
     });
   });
 
@@ -60,7 +68,9 @@ describe("ConfluenceOperationRouter", () => {
     });
 
     test("should return fallback version for unmapped operations", () => {
-      expect(router.getVersionForOperation("nonExistent" as ConfluenceOperation)).toBe("v2");
+      expect(
+        router.getVersionForOperation("nonExistent" as ConfluenceOperation),
+      ).toBe("v2");
     });
   });
 
@@ -124,7 +134,7 @@ describe("ConfluenceOperationRouter", () => {
   describe("setOperationVersion", () => {
     test("should update operation mapping", () => {
       expect(router.getVersionForOperation("search")).toBe("v1");
-      
+
       router.setOperationVersion("search", "v2");
       expect(router.getVersionForOperation("search")).toBe("v2");
     });
@@ -177,7 +187,9 @@ describe("Default Operation Router", () => {
   test("should be properly configured", () => {
     expect(defaultOperationRouter).toBeInstanceOf(ConfluenceOperationRouter);
     expect(defaultOperationRouter.getVersionForOperation("search")).toBe("v1");
-    expect(defaultOperationRouter.getVersionForOperation("getSpaces")).toBe("v2");
+    expect(defaultOperationRouter.getVersionForOperation("getSpaces")).toBe(
+      "v2",
+    );
   });
 
   test("should be a singleton instance", () => {
@@ -189,9 +201,9 @@ describe("Custom Configuration", () => {
   test("should handle partial custom mappings", () => {
     const router = new ConfluenceOperationRouter({
       customMappings: {
-        search: "v2"
+        search: "v2",
         // Only override search, others should remain default
-      }
+      },
     });
 
     expect(router.getVersionForOperation("search")).toBe("v2");
@@ -201,7 +213,7 @@ describe("Custom Configuration", () => {
 
   test("should handle empty custom mappings", () => {
     const router = new ConfluenceOperationRouter({
-      customMappings: {}
+      customMappings: {},
     });
 
     expect(router.getVersionForOperation("search")).toBe("v1");
@@ -211,8 +223,8 @@ describe("Custom Configuration", () => {
   test("should handle undefined custom mappings", () => {
     const router = new ConfluenceOperationRouter({
       customMappings: {
-        search: undefined
-      }
+        search: undefined,
+      },
     });
 
     // Should ignore undefined values and keep defaults
@@ -222,13 +234,15 @@ describe("Custom Configuration", () => {
   test("should combine custom mappings with fallback version", () => {
     const router = new ConfluenceOperationRouter({
       customMappings: {
-        search: "v2"
+        search: "v2",
       },
-      fallbackVersion: "v1"
+      fallbackVersion: "v1",
     });
 
     expect(router.getVersionForOperation("search")).toBe("v2");
-    expect(router.getVersionForOperation("nonExistent" as ConfluenceOperation)).toBe("v1");
+    expect(
+      router.getVersionForOperation("nonExistent" as ConfluenceOperation),
+    ).toBe("v1");
   });
 });
 
@@ -250,7 +264,7 @@ describe("Edge Cases", () => {
       "deletePage",
       "getSpace",
       "createSpace",
-      "updateSpace"
+      "updateSpace",
     ];
 
     for (const operation of operations) {
@@ -264,15 +278,15 @@ describe("Edge Cases", () => {
       "search",
       "getSpaces",
       "getPage",
-      "createPage"
+      "createPage",
     ];
 
     for (const operation of operations) {
       const isV1 = router.isV1Operation(operation);
       const isV2 = router.isV2Operation(operation);
-      
+
       // Should be exactly one of v1 or v2, not both or neither
       expect(isV1 !== isV2).toBe(true);
     }
   });
-}); 
+});

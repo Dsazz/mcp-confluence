@@ -60,15 +60,13 @@ export const getPageSchema = z.object({
  * Schema for search pages parameters
  */
 export const searchPagesSchema = z.object({
-  query: z.string().describe("CQL (Confluence Query Language) search query. Convert natural language to CQL syntax. Examples: text~\"keyword\", text~\"multi word phrase\", title~\"page title\", space.key=\"SPACE\""),
-  spaceKey: z
+  query: z
     .string()
-    .optional()
-    .describe("Limit search to specific space"),
-  type: z
-    .enum(["page", "blogpost"])
-    .optional()
-    .describe("Content type filter"),
+    .describe(
+      'CQL (Confluence Query Language) search query. Convert natural language to CQL syntax. Examples: text~"keyword", text~"multi word phrase", title~"page title", space.key="SPACE"',
+    ),
+  spaceKey: z.string().optional().describe("Limit search to specific space"),
+  type: z.enum(["page", "blogpost"]).optional().describe("Content type filter"),
   limit: z
     .number()
     .min(1)
@@ -90,7 +88,9 @@ export const searchPagesSchema = z.object({
  * Schema for create page parameters
  */
 export const createPageSchema = z.object({
-  spaceId: z.string().describe("The ID of the space where the page will be created"),
+  spaceId: z
+    .string()
+    .describe("The ID of the space where the page will be created"),
   title: z.string().min(1).describe("The title of the new page"),
   content: z.string().describe("The content of the page"),
   parentPageId: z
@@ -112,23 +112,13 @@ export const createPageSchema = z.object({
  */
 export const updatePageSchema = z.object({
   pageId: pageIdSchema,
-  title: z
-    .string()
-    .min(1)
-    .optional()
-    .describe("New title for the page"),
-  content: z
-    .string()
-    .optional()
-    .describe("New content for the page"),
+  title: z.string().min(1).optional().describe("New title for the page"),
+  content: z.string().optional().describe("New content for the page"),
   versionNumber: z
     .number()
     .min(1)
     .describe("Current version number of the page"),
-  status: z
-    .enum(["current", "draft"])
-    .optional()
-    .describe("Page status"),
+  status: z.enum(["current", "draft"]).optional().describe("Page status"),
   contentFormat: z
     .enum(["storage", "editor", "wiki"])
     .optional()
@@ -137,4 +127,4 @@ export const updatePageSchema = z.object({
     .string()
     .optional()
     .describe("Message describing the changes made"),
-}); 
+});

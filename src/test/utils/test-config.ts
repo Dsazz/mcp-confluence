@@ -29,9 +29,9 @@ export interface TestConfig {
 
 export const defaultTestConfig: TestConfig = {
   timeout: {
-    unit: 5000,      // 5 seconds for unit tests
+    unit: 5000, // 5 seconds for unit tests
     integration: 15000, // 15 seconds for integration tests
-    api: 30000,      // 30 seconds for API tests
+    api: 30000, // 30 seconds for API tests
   },
   confluence: {
     baseUrl: "https://test.atlassian.net/wiki",
@@ -92,7 +92,9 @@ export const testEnvironments = {
 };
 
 // Get configuration based on environment
-export function getTestConfig(environment: keyof typeof testEnvironments = "unit"): TestConfig {
+export function getTestConfig(
+  environment: keyof typeof testEnvironments = "unit",
+): TestConfig {
   return testEnvironments[environment];
 }
 
@@ -146,4 +148,4 @@ export const TEST_CONSTANTS = {
     TOO_MANY_REQUESTS: 429,
     INTERNAL_SERVER_ERROR: 500,
   },
-} as const; 
+} as const;

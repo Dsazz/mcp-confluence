@@ -8,7 +8,7 @@ export namespace TestAssertions {
   export function isValidPage(page: unknown): page is Page {
     if (typeof page !== "object" || page === null) return false;
     const p = page as Record<string, unknown>;
-    
+
     return (
       typeof p.id === "string" &&
       typeof p.title === "string" &&
@@ -16,7 +16,10 @@ export namespace TestAssertions {
       typeof p.authorId === "string" &&
       typeof p.createdAt === "string" &&
       (p.type === "page" || p.type === "blogpost") &&
-      (p.status === "current" || p.status === "trashed" || p.status === "deleted" || p.status === "draft") &&
+      (p.status === "current" ||
+        p.status === "trashed" ||
+        p.status === "deleted" ||
+        p.status === "draft") &&
       typeof p.version === "object" &&
       p.version !== null &&
       typeof p._links === "object" &&
@@ -27,7 +30,7 @@ export namespace TestAssertions {
   export function isValidSpace(space: unknown): space is Space {
     if (typeof space !== "object" || space === null) return false;
     const s = space as Record<string, unknown>;
-    
+
     return (
       typeof s.id === "string" &&
       typeof s.key === "string" &&
@@ -40,10 +43,12 @@ export namespace TestAssertions {
     );
   }
 
-  export function isValidErrorResponse(error: unknown): error is ToolErrorResponse {
+  export function isValidErrorResponse(
+    error: unknown,
+  ): error is ToolErrorResponse {
     if (typeof error !== "object" || error === null) return false;
     const e = error as Record<string, unknown>;
-    
+
     return (
       e.success === false &&
       typeof e.error === "object" &&
@@ -55,84 +60,96 @@ export namespace TestAssertions {
 
   export function hasRequiredFields<T extends Record<string, unknown>>(
     obj: T,
-    fields: (keyof T)[]
+    fields: (keyof T)[],
   ): boolean {
-    return fields.every(field => obj[field] !== undefined && obj[field] !== null);
+    return fields.every(
+      (field) => obj[field] !== undefined && obj[field] !== null,
+    );
   }
 }
 
 function isValidISODate(dateString: string): boolean {
   const date = new Date(dateString);
-  return date instanceof Date && !Number.isNaN(date.getTime()) && date.toISOString() === dateString;
+  return (
+    date instanceof Date &&
+    !Number.isNaN(date.getTime()) &&
+    date.toISOString() === dateString
+  );
 }
 
 // Test data validation helpers
 export namespace TestValidation {
   export function validatePageStructure(page: Page): string[] {
     const errors: string[] = [];
-    
+
     if (!page.id || page.id.length === 0) {
       errors.push("Page ID is required and cannot be empty");
     }
-    
+
     if (!page.title || page.title.length === 0) {
       errors.push("Page title is required and cannot be empty");
     }
-    
+
     if (!page.spaceId || page.spaceId.length === 0) {
       errors.push("Page spaceId is required and cannot be empty");
     }
-    
+
     if (!page.authorId || page.authorId.length === 0) {
       errors.push("Page authorId is required and cannot be empty");
     }
-    
+
     if (!page.createdAt || !isValidISODate(page.createdAt)) {
       errors.push("Page createdAt must be a valid ISO date string");
     }
-    
-    if (!page.version || typeof page.version.number !== "number" || page.version.number < 1) {
+
+    if (
+      !page.version ||
+      typeof page.version.number !== "number" ||
+      page.version.number < 1
+    ) {
       errors.push("Page version number must be a positive integer");
     }
-    
+
     if (!page._links || !page._links.webui || !page._links.self) {
       errors.push("Page must have valid _links with webui and self properties");
     }
-    
+
     return errors;
   }
 
   export function validateSpaceStructure(space: Space): string[] {
     const errors: string[] = [];
-    
+
     if (!space.id || space.id.length === 0) {
       errors.push("Space ID is required and cannot be empty");
     }
-    
+
     if (!space.key || space.key.length === 0) {
       errors.push("Space key is required and cannot be empty");
     }
-    
+
     if (!space.name || space.name.length === 0) {
       errors.push("Space name is required and cannot be empty");
     }
-    
+
     if (!space.createdAt || !isValidISODate(space.createdAt)) {
       errors.push("Space createdAt must be a valid ISO date string");
     }
-    
+
     if (!["global", "personal"].includes(space.type)) {
       errors.push("Space type must be 'global' or 'personal'");
     }
-    
+
     if (!["current", "archived"].includes(space.status)) {
       errors.push("Space status must be 'current' or 'archived'");
     }
-    
+
     if (!space._links || !space._links.webui || !space._links.self) {
-      errors.push("Space must have valid _links with webui and self properties");
+      errors.push(
+        "Space must have valid _links with webui and self properties",
+      );
     }
-    
+
     return errors;
   }
 }
@@ -251,7 +268,10 @@ export namespace TestScenarios {
             code: "PERMISSION_DENIED",
             message: "Permission denied",
             details: "You do not have permission to access this resource",
-            suggestions: ["Contact your administrator", "Check your permissions"],
+            suggestions: [
+              "Contact your administrator",
+              "Check your permissions",
+            ],
           },
         },
       },
@@ -274,7 +294,9 @@ export namespace TestScenarios {
 
 // Test timing and performance helpers
 export namespace TestTiming {
-  export async function measureExecutionTime<T>(fn: () => Promise<T>): Promise<{ result: T; executionTime: number }> {
+  export async function measureExecutionTime<T>(
+    fn: () => Promise<T>,
+  ): Promise<{ result: T; executionTime: number }> {
     const start = performance.now();
     const result = await fn();
     const executionTime = performance.now() - start;
@@ -282,14 +304,20 @@ export namespace TestTiming {
   }
 
   export function createTimeout(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  export async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  export async function withTimeout<T>(
+    promise: Promise<T>,
+    timeoutMs: number,
+  ): Promise<T> {
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
+      setTimeout(
+        () => reject(new Error(`Operation timed out after ${timeoutMs}ms`)),
+        timeoutMs,
+      ),
     );
-    
+
     return Promise.race([promise, timeoutPromise]);
   }
 }
@@ -316,4 +344,4 @@ export namespace TestCleanup {
   export function clearCleanupTasks(): void {
     cleanupTasks.length = 0;
   }
-} 
+}

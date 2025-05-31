@@ -48,13 +48,9 @@ export {
   createConfluenceHttpClient,
 } from "./http-client.factory";
 
-export {
-  ConfluenceHttpClientV1,
-} from "./http-client-v1.impl";
+export { ConfluenceHttpClientV1 } from "./http-client-v1.impl";
 
-export {
-  ConfluenceHttpClientV2,
-} from "./http-client-v2.impl";
+export { ConfluenceHttpClientV2 } from "./http-client-v2.impl";
 
 // Export operation router
 export {

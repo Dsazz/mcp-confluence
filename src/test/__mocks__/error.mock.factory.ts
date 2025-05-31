@@ -1,9 +1,11 @@
 import type { ToolErrorResponse } from "../../features/confluence/api/responses.types";
-import type { ErrorMockFactory } from "./mock-factory.interfaces";
 import type { ConfluenceApiError } from "./confluence-api.mock.registry";
+import type { ErrorMockFactory } from "./mock-factory.interfaces";
 
 // Error Mock Factory for Comprehensive Error Testing
-export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorResponse> {
+export class ConfluenceErrorMockFactory
+  implements ErrorMockFactory<ToolErrorResponse>
+{
   private readonly errorTemplates = {
     "not-found": {
       status: 404,
@@ -41,7 +43,7 @@ export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorRes
       message: "Internal server error",
       details: "An unexpected error occurred on the server",
     },
-    "conflict": {
+    conflict: {
       status: 409,
       code: "CONFLICT",
       message: "Resource conflict",
@@ -57,7 +59,9 @@ export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorRes
 
   create(overrides: Partial<ToolErrorResponse> = {}): ToolErrorResponse {
     const errorType = (overrides as { type?: string }).type || "server-error";
-    const template = this.errorTemplates[errorType as keyof typeof this.errorTemplates] || this.errorTemplates["server-error"];
+    const template =
+      this.errorTemplates[errorType as keyof typeof this.errorTemplates] ||
+      this.errorTemplates["server-error"];
 
     return {
       success: false,
@@ -78,7 +82,10 @@ export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorRes
     };
   }
 
-  createMany(count: number, overrides: Partial<ToolErrorResponse> = {}): ToolErrorResponse[] {
+  createMany(
+    count: number,
+    overrides: Partial<ToolErrorResponse> = {},
+  ): ToolErrorResponse[] {
     return Array.from({ length: count }, () => this.create(overrides));
   }
 
@@ -87,7 +94,9 @@ export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorRes
   }
 
   createValid(): ToolErrorResponse {
-    return this.create({ type: "validation-error" } as Partial<ToolErrorResponse>);
+    return this.create({
+      type: "validation-error",
+    } as Partial<ToolErrorResponse>);
   }
 
   createMinimal(): ToolErrorResponse {
@@ -254,7 +263,11 @@ export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorRes
 
 // Confluence API Error Factory for HTTP-level errors
 export class ConfluenceApiErrorFactory {
-  createApiError(type: string, status: number, message: string): ConfluenceApiError {
+  createApiError(
+    type: string,
+    status: number,
+    message: string,
+  ): ConfluenceApiError {
     return {
       type,
       status,
@@ -311,4 +324,4 @@ export class ConfluenceApiErrorFactory {
   private generateRequestId(): string {
     return `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
-} 
+}

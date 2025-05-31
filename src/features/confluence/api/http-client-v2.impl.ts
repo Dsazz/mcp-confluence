@@ -1,9 +1,9 @@
-import type {
-  ConfluenceConfig,
-  ConfluenceRequestConfig,
-} from "./config.types";
-import { BaseConfluenceHttpClient, ConfluenceApiError } from "./http-client.abstract.base";
 import { logger } from "@core/logging";
+import type { ConfluenceConfig, ConfluenceRequestConfig } from "./config.types";
+import {
+  BaseConfluenceHttpClient,
+  ConfluenceApiError,
+} from "./http-client.abstract.base";
 
 /**
  * Confluence API v2 HTTP client implementation
@@ -50,7 +50,7 @@ export class ConfluenceHttpClientV2 extends BaseConfluenceHttpClient {
     try {
       logger.debug(
         `Making ${request.method} request to v2 API: ${finalUrl.toString()}`,
-        { prefix: "CONFLUENCE-V2" }
+        { prefix: "CONFLUENCE-V2" },
       );
 
       const response = await fetch(finalUrl.toString(), fetchOptions);
@@ -76,13 +76,13 @@ export class ConfluenceHttpClientV2 extends BaseConfluenceHttpClient {
 
       logger.error(
         `v2 API request failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-        { prefix: "CONFLUENCE-V2" }
+        { prefix: "CONFLUENCE-V2" },
       );
       throw new ConfluenceApiError(
         `v2 API request failed: ${error instanceof Error ? error.message : "Unknown error"}`,
         undefined,
         error,
-        "v2"
+        "v2",
       );
     }
   }
@@ -100,4 +100,4 @@ export class ConfluenceHttpClientV2 extends BaseConfluenceHttpClient {
   getBaseApiUrl(): string {
     return this.baseUrl;
   }
-} 
+}

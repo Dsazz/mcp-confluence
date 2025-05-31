@@ -1,19 +1,23 @@
 // Central Mock Registry - Single point of access for all mock factories
 import type {
   Comment,
-  SearchResult,
   PaginationInfo,
   ResponseMetadata,
+  SearchResult,
 } from "../../features/confluence/api/models.types";
 import type {
-  ConfluenceApiSpacesResponse,
   ConfluenceApiSearchResponse,
+  ConfluenceApiSpacesResponse,
 } from "../../features/confluence/api/responses.types";
 import type { ConfluenceApiMockRegistry } from "./confluence-api.mock.registry";
+import { ConfluenceErrorMockFactory } from "./error.mock.factory";
+import type {
+  BuildableMockFactory,
+  MockBuilder,
+  MockFactory,
+} from "./mock-factory.interfaces";
 import { PageMockFactory } from "./page.mock.factory";
 import { SpaceMockFactory } from "./space.mock.factory";
-import { ConfluenceErrorMockFactory } from "./error.mock.factory";
-import type { MockFactory, BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
 
 // Simple mock factories for supporting entities
 class PaginationMockFactory implements MockFactory<PaginationInfo> {
@@ -27,7 +31,10 @@ class PaginationMockFactory implements MockFactory<PaginationInfo> {
     };
   }
 
-  createMany(count: number, overrides: Partial<PaginationInfo> = {}): PaginationInfo[] {
+  createMany(
+    count: number,
+    overrides: Partial<PaginationInfo> = {},
+  ): PaginationInfo[] {
     return Array.from({ length: count }, () => this.create(overrides));
   }
 
@@ -54,7 +61,10 @@ class ResponseMetadataMockFactory implements MockFactory<ResponseMetadata> {
     };
   }
 
-  createMany(count: number, overrides: Partial<ResponseMetadata> = {}): ResponseMetadata[] {
+  createMany(
+    count: number,
+    overrides: Partial<ResponseMetadata> = {},
+  ): ResponseMetadata[] {
     return Array.from({ length: count }, () => this.create(overrides));
   }
 
@@ -77,7 +87,10 @@ class SearchResultMockBuilder implements MockBuilder<SearchResult> {
 
   constructor(private factory: SearchResultMockFactory) {}
 
-  with<K extends keyof SearchResult>(key: K, value: SearchResult[K]): SearchResultMockBuilder {
+  with<K extends keyof SearchResult>(
+    key: K,
+    value: SearchResult[K],
+  ): SearchResultMockBuilder {
     this.overrides[key] = value;
     return this;
   }
@@ -87,7 +100,10 @@ class SearchResultMockBuilder implements MockBuilder<SearchResult> {
     return this;
   }
 
-  withRelated<R>(_relation: string, _factory: { create(): R }): SearchResultMockBuilder {
+  withRelated<R>(
+    _relation: string,
+    _factory: { create(): R },
+  ): SearchResultMockBuilder {
     return this;
   }
 
@@ -124,7 +140,10 @@ class SearchResultMockFactory implements BuildableMockFactory<SearchResult> {
     };
   }
 
-  createMany(count: number, overrides: Partial<SearchResult> = {}): SearchResult[] {
+  createMany(
+    count: number,
+    overrides: Partial<SearchResult> = {},
+  ): SearchResult[] {
     return Array.from({ length: count }, (_, index) =>
       this.create({
         ...overrides,
@@ -146,7 +165,7 @@ class SearchResultMockFactory implements BuildableMockFactory<SearchResult> {
           ...overrides.content,
         },
         score: Math.random(),
-      })
+      }),
     );
   }
 
@@ -183,7 +202,10 @@ class CommentMockBuilder implements MockBuilder<Comment> {
     return this;
   }
 
-  withRelated<R>(_relation: string, _factory: { create(): R }): CommentMockBuilder {
+  withRelated<R>(
+    _relation: string,
+    _factory: { create(): R },
+  ): CommentMockBuilder {
     return this;
   }
 
@@ -221,7 +243,7 @@ class CommentMockFactory implements BuildableMockFactory<Comment> {
       this.create({
         ...overrides,
         title: `Comment ${index + 1}`,
-      })
+      }),
     );
   }
 
@@ -233,7 +255,8 @@ class CommentMockFactory implements BuildableMockFactory<Comment> {
     return this.create({
       body: {
         storage: {
-          value: "<p>This is a comprehensive comment with detailed information.</p>",
+          value:
+            "<p>This is a comprehensive comment with detailed information.</p>",
           representation: "storage",
         },
       },
@@ -250,10 +273,14 @@ class CommentMockFactory implements BuildableMockFactory<Comment> {
 }
 
 // API Response Mock Factories
-class ConfluenceApiSpacesResponseMockFactory implements MockFactory<ConfluenceApiSpacesResponse> {
+class ConfluenceApiSpacesResponseMockFactory
+  implements MockFactory<ConfluenceApiSpacesResponse>
+{
   constructor(private spaceMockFactory: SpaceMockFactory) {}
 
-  create(overrides: Partial<ConfluenceApiSpacesResponse> = {}): ConfluenceApiSpacesResponse {
+  create(
+    overrides: Partial<ConfluenceApiSpacesResponse> = {},
+  ): ConfluenceApiSpacesResponse {
     const results = overrides.results || this.spaceMockFactory.createMany(3);
     return {
       results,
@@ -267,7 +294,10 @@ class ConfluenceApiSpacesResponseMockFactory implements MockFactory<ConfluenceAp
     };
   }
 
-  createMany(count: number, overrides: Partial<ConfluenceApiSpacesResponse> = {}): ConfluenceApiSpacesResponse[] {
+  createMany(
+    count: number,
+    overrides: Partial<ConfluenceApiSpacesResponse> = {},
+  ): ConfluenceApiSpacesResponse[] {
     return Array.from({ length: count }, () => this.create(overrides));
   }
 
@@ -284,11 +314,16 @@ class ConfluenceApiSpacesResponseMockFactory implements MockFactory<ConfluenceAp
   }
 }
 
-class ConfluenceApiSearchResponseMockFactory implements MockFactory<ConfluenceApiSearchResponse> {
+class ConfluenceApiSearchResponseMockFactory
+  implements MockFactory<ConfluenceApiSearchResponse>
+{
   constructor(private searchResultMockFactory: SearchResultMockFactory) {}
 
-  create(overrides: Partial<ConfluenceApiSearchResponse> = {}): ConfluenceApiSearchResponse {
-    const results = overrides.results || this.searchResultMockFactory.createMany(5);
+  create(
+    overrides: Partial<ConfluenceApiSearchResponse> = {},
+  ): ConfluenceApiSearchResponse {
+    const results =
+      overrides.results || this.searchResultMockFactory.createMany(5);
     return {
       results,
       start: 0,
@@ -303,7 +338,10 @@ class ConfluenceApiSearchResponseMockFactory implements MockFactory<ConfluenceAp
     };
   }
 
-  createMany(count: number, overrides: Partial<ConfluenceApiSearchResponse> = {}): ConfluenceApiSearchResponse[] {
+  createMany(
+    count: number,
+    overrides: Partial<ConfluenceApiSearchResponse> = {},
+  ): ConfluenceApiSearchResponse[] {
     return Array.from({ length: count }, () => this.create(overrides));
   }
 
@@ -336,17 +374,22 @@ class ConfluenceApiMockRegistryImpl implements ConfluenceApiMockRegistry {
   };
 
   // Convenience methods for common scenarios
-  createPageInSpace(spaceId: string): ReturnType<PageMockFactory['create']> {
+  createPageInSpace(spaceId: string): ReturnType<PageMockFactory["create"]> {
     return this.pages.create({ spaceId });
   }
 
-  createPageWithParent(parentId: string): ReturnType<PageMockFactory['create']> {
+  createPageWithParent(
+    parentId: string,
+  ): ReturnType<PageMockFactory["create"]> {
     return this.pages.create({ parentId });
   }
 
-  createSearchResults(query: string, count: number): ReturnType<SearchResultMockFactory['createMany']> {
+  createSearchResults(
+    query: string,
+    count: number,
+  ): ReturnType<SearchResultMockFactory["createMany"]> {
     return this.searchResults.createMany(count, {
-      content: { 
+      content: {
         id: `search-${Date.now()}`,
         type: "page" as const,
         status: "current",
@@ -365,8 +408,13 @@ class ConfluenceApiMockRegistryImpl implements ConfluenceApiMockRegistry {
     });
   }
 
-  createErrorResponse(type: string, context?: Record<string, unknown>): ReturnType<ConfluenceErrorMockFactory['create']> {
-    return this.errors.create({ type, context } as Parameters<ConfluenceErrorMockFactory['create']>[0]);
+  createErrorResponse(
+    type: string,
+    context?: Record<string, unknown>,
+  ): ReturnType<ConfluenceErrorMockFactory["create"]> {
+    return this.errors.create({ type, context } as Parameters<
+      ConfluenceErrorMockFactory["create"]
+    >[0]);
   }
 }
 
@@ -385,4 +433,4 @@ export type {
   BuildableMockFactory,
   MockBuilder,
   MockScenario,
-} from "./mock-factory.interfaces"; 
+} from "./mock-factory.interfaces";

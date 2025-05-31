@@ -1,9 +1,9 @@
+import { logger } from "@core/logging";
 import { BaseToolHandler } from "@core/tools/tool-handler.class";
 import type { CreatePageResponse, Page } from "../../api/index";
 import type { ConfluenceClient } from "../../api/index";
-import type { CreatePageParams } from "../tools.types";
 import type { Space } from "../../api/models.types";
-import { logger } from "@core/logging";
+import type { CreatePageParams } from "../tools.types";
 
 export class ConfluenceCreatePageHandler extends BaseToolHandler<
   CreatePageParams,
@@ -31,7 +31,7 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
 
     logger.info(
       `Created page "${createdPage.title}" in space ${validatedParams.spaceId}`,
-      { prefix: "CONFLUENCE" }
+      { prefix: "CONFLUENCE" },
     );
 
     return {
@@ -51,7 +51,11 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
       throw new Error("spaceId is required and must be a string");
     }
 
-    if (!params.title || typeof params.title !== "string" || params.title.trim().length === 0) {
+    if (
+      !params.title ||
+      typeof params.title !== "string" ||
+      params.title.trim().length === 0
+    ) {
       throw new Error("title is required and must be a non-empty string");
     }
 
@@ -82,7 +86,10 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
 
     if (params.contentFormat && typeof params.contentFormat === "string") {
       if (["storage", "editor", "wiki"].includes(params.contentFormat)) {
-        validatedParams.contentFormat = params.contentFormat as "storage" | "editor" | "wiki";
+        validatedParams.contentFormat = params.contentFormat as
+          | "storage"
+          | "editor"
+          | "wiki";
       } else {
         throw new Error(
           `Invalid contentFormat parameter: ${params.contentFormat}. Must be 'storage', 'editor', or 'wiki'`,
@@ -112,41 +119,51 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
       const response = await this.confluenceClient.createPage(pageData);
       return response;
     } catch (error) {
-      logger.error("Failed to create page", { 
+      logger.error("Failed to create page", {
         error: error instanceof Error ? error.message : String(error),
         spaceId: params.spaceId,
         title: params.title,
-        prefix: "CONFLUENCE"
+        prefix: "CONFLUENCE",
       });
-      
+
       if (error instanceof Error) {
         if (error.message.includes("Space not found")) {
-          throw new Error(`Space not found: ${params.spaceId}. Please verify the space ID.`);
+          throw new Error(
+            `Space not found: ${params.spaceId}. Please verify the space ID.`,
+          );
         }
         if (error.message.includes("Parent page not found")) {
-          throw new Error(`Parent page not found: ${params.parentPageId}. Please verify the parent page ID.`);
+          throw new Error(
+            `Parent page not found: ${params.parentPageId}. Please verify the parent page ID.`,
+          );
         }
         if (error.message.includes("Permission denied")) {
-          throw new Error(`Permission denied. You don't have permission to create pages in space: ${params.spaceId}`);
+          throw new Error(
+            `Permission denied. You don't have permission to create pages in space: ${params.spaceId}`,
+          );
         }
         if (error.message.includes("Title already exists")) {
-          throw new Error(`A page with title "${params.title}" already exists in this space.`);
+          throw new Error(
+            `A page with title "${params.title}" already exists in this space.`,
+          );
         }
       }
-      
-      throw new Error(`Failed to create page: ${error instanceof Error ? error.message : String(error)}`);
+
+      throw new Error(
+        `Failed to create page: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
   private async getPageContext(page: Page) {
     try {
       // Get space information
-      const spaces = await this.confluenceClient.getSpaces({ 
-        limit: 1000 // Get all spaces to find the one containing our page
+      const spaces = await this.confluenceClient.getSpaces({
+        limit: 1000, // Get all spaces to find the one containing our page
       });
-      
+
       const space = spaces.spaces.find((s: Space) => s.id === page.spaceId);
-      
+
       // Generate breadcrumbs
       const breadcrumbs = [];
       if (space) {
@@ -158,7 +175,7 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
           },
         });
       }
-      
+
       // Add parent breadcrumbs if this page has a parent
       if (page.parentId) {
         try {
@@ -171,39 +188,41 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
             },
           });
         } catch (_error) {
-          logger.warn("Failed to get parent page for breadcrumbs", { 
+          logger.warn("Failed to get parent page for breadcrumbs", {
             parentId: page.parentId,
-            prefix: "CONFLUENCE"
+            prefix: "CONFLUENCE",
           });
         }
       }
 
       return {
-        space: space ? {
-          id: space.id,
-          key: space.key,
-          name: space.name,
-          type: space.type,
-          _links: {
-            webui: space._links.webui,
-          },
-        } : {
-          id: page.spaceId,
-          key: "unknown",
-          name: "Unknown Space",
-          type: "global" as const,
-          _links: {
-            webui: `/spaces/${page.spaceId}`,
-          },
-        },
+        space: space
+          ? {
+              id: space.id,
+              key: space.key,
+              name: space.name,
+              type: space.type,
+              _links: {
+                webui: space._links.webui,
+              },
+            }
+          : {
+              id: page.spaceId,
+              key: "unknown",
+              name: "Unknown Space",
+              type: "global" as const,
+              _links: {
+                webui: `/spaces/${page.spaceId}`,
+              },
+            },
         breadcrumbs,
       };
     } catch (error) {
-      logger.warn("Failed to get page context", { 
+      logger.warn("Failed to get page context", {
         error: error instanceof Error ? error.message : String(error),
-        prefix: "CONFLUENCE"
+        prefix: "CONFLUENCE",
       });
-      
+
       return {
         space: {
           id: page.spaceId,
@@ -218,4 +237,4 @@ export class ConfluenceCreatePageHandler extends BaseToolHandler<
       };
     }
   }
-} 
+}

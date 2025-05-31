@@ -1,5 +1,8 @@
-import { describe, test, expect } from "bun:test";
-import { createPaginationParams, createPaginationInfo } from "../../../../../features/confluence/api/pagination.helper";
+import { describe, expect, test } from "bun:test";
+import {
+  createPaginationInfo,
+  createPaginationParams,
+} from "../../../../../features/confluence/api/pagination.helper";
 
 describe("createPaginationParams", () => {
   describe("Default Parameters", () => {
@@ -7,7 +10,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams();
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
@@ -15,7 +18,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({});
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
   });
@@ -25,7 +28,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ limit: 50 });
       expect(params).toEqual({
         limit: 50,
-        start: 0
+        start: 0,
       });
     });
 
@@ -33,7 +36,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ start: 100 });
       expect(params).toEqual({
         limit: 25,
-        start: 100
+        start: 100,
       });
     });
 
@@ -41,7 +44,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ limit: 10, start: 50 });
       expect(params).toEqual({
         limit: 10,
-        start: 50
+        start: 50,
       });
     });
   });
@@ -51,7 +54,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ limit: 0 });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
@@ -59,7 +62,7 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ start: 0 });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
@@ -67,15 +70,18 @@ describe("createPaginationParams", () => {
       const params = createPaginationParams({ limit: 1000, start: 999999 });
       expect(params).toEqual({
         limit: 1000,
-        start: 999999
+        start: 999999,
       });
     });
 
     test("should handle undefined values", () => {
-      const params = createPaginationParams({ limit: undefined, start: undefined });
+      const params = createPaginationParams({
+        limit: undefined,
+        start: undefined,
+      });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
   });
@@ -88,7 +94,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 10,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -96,7 +102,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 10,
-        hasMore: false
+        hasMore: false,
       });
     });
 
@@ -106,8 +112,8 @@ describe("createPaginationInfo", () => {
         limit: 25,
         size: 25,
         _links: {
-          next: "/api/v2/spaces?start=25"
-        }
+          next: "/api/v2/spaces?start=25",
+        },
       };
 
       const result = createPaginationInfo(response);
@@ -115,7 +121,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 25,
-        hasMore: true
+        hasMore: true,
       });
     });
 
@@ -124,7 +130,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 15,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -132,7 +138,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 15,
-        hasMore: false
+        hasMore: false,
       });
     });
   });
@@ -143,7 +149,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 0,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -151,7 +157,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 25,
         size: 0,
-        hasMore: false
+        hasMore: false,
       });
     });
 
@@ -160,7 +166,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 0,
         size: 0,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -168,7 +174,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 0,
         size: 0,
-        hasMore: false
+        hasMore: false,
       });
     });
 
@@ -177,7 +183,7 @@ describe("createPaginationInfo", () => {
         start: 1000,
         limit: 25,
         size: 10,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -185,7 +191,7 @@ describe("createPaginationInfo", () => {
         start: 1000,
         limit: 25,
         size: 10,
-        hasMore: false
+        hasMore: false,
       });
     });
   });
@@ -197,8 +203,8 @@ describe("createPaginationInfo", () => {
         limit: 10,
         size: 10,
         _links: {
-          next: "/wiki/api/v2/spaces?start=10&limit=10"
-        }
+          next: "/wiki/api/v2/spaces?start=10&limit=10",
+        },
       };
 
       const result = createPaginationInfo(response);
@@ -206,7 +212,7 @@ describe("createPaginationInfo", () => {
         start: 0,
         limit: 10,
         size: 10,
-        hasMore: true
+        hasMore: true,
       });
     });
 
@@ -215,7 +221,7 @@ describe("createPaginationInfo", () => {
         start: 90,
         limit: 10,
         size: 5,
-        _links: {}
+        _links: {},
       };
 
       const result = createPaginationInfo(response);
@@ -223,8 +229,8 @@ describe("createPaginationInfo", () => {
         start: 90,
         limit: 10,
         size: 5,
-        hasMore: false
+        hasMore: false,
       });
     });
   });
-}); 
+});

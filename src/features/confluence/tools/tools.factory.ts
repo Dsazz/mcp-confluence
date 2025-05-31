@@ -5,10 +5,10 @@
  */
 
 import type { ConfluenceClient } from "../api/index";
-import { ConfluenceGetSpacesHandler } from "./handlers/get-spaces.handler";
-import { ConfluenceGetPageHandler } from "./handlers/get-page.handler";
-import { ConfluenceSearchPagesHandler } from "./handlers/search-pages.handler";
 import { ConfluenceCreatePageHandler } from "./handlers/create-page.handler";
+import { ConfluenceGetPageHandler } from "./handlers/get-page.handler";
+import { ConfluenceGetSpacesHandler } from "./handlers/get-spaces.handler";
+import { ConfluenceSearchPagesHandler } from "./handlers/search-pages.handler";
 import { ConfluenceUpdatePageHandler } from "./handlers/update-page.handler";
 
 /**
@@ -28,7 +28,9 @@ export interface ConfluenceTools {
  * @param client - The Confluence client instance
  * @returns Object containing all tool handler instances
  */
-export function createConfluenceTools(client: ConfluenceClient): ConfluenceTools {
+export function createConfluenceTools(
+  client: ConfluenceClient,
+): ConfluenceTools {
   return {
     getSpaces: new ConfluenceGetSpacesHandler(client),
     getPage: new ConfluenceGetPageHandler(client),
@@ -36,4 +38,4 @@ export function createConfluenceTools(client: ConfluenceClient): ConfluenceTools
     createPage: new ConfluenceCreatePageHandler(client),
     updatePage: new ConfluenceUpdatePageHandler(client),
   };
-} 
+}

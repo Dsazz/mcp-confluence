@@ -35,4 +35,4 @@ export function isValidConfluenceConfig(config: ConfluenceConfig): boolean {
   } catch {
     return false;
   }
-} 
+}

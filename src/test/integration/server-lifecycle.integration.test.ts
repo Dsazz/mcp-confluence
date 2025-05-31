@@ -1,14 +1,21 @@
-import { beforeEach, afterEach, describe, expect, test } from "bun:test";
-import { createServer, type ServerContext } from "../../core/server/server.lifecycle";
-import { setupErrorHandlers, setupSignalHandlers, type ServerCleanup } from "../../core/server/server.handlers";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { serverConfig } from "../../core/server/server.config";
-import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
-import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
-import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
-import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
-import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
-import { ConfluenceConfig } from "../../features/confluence/api/config.types";
+import {
+  type ServerCleanup,
+  setupErrorHandlers,
+  setupSignalHandlers,
+} from "../../core/server/server.handlers";
+import {
+  type ServerContext,
+  createServer,
+} from "../../core/server/server.lifecycle";
 import { ConfluenceClient } from "../../features/confluence/api/client.impl";
+import { ConfluenceConfig } from "../../features/confluence/api/config.types";
+import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
+import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
+import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
+import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
+import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
 
 describe("Server Lifecycle Integration", () => {
   let serverContext: ServerContext | null = null;
@@ -26,7 +33,7 @@ describe("Server Lifecycle Integration", () => {
     const mockConfig = new ConfluenceConfig(
       "https://test.atlassian.net/wiki",
       "test-token",
-      "test@example.com"
+      "test@example.com",
     );
     mockConfluenceClient = new ConfluenceClient(mockConfig);
 
@@ -47,14 +54,14 @@ describe("Server Lifecycle Integration", () => {
         // Mock process.exit to prevent actual exit during tests
         const originalExit = process.exit;
         process.exit = (() => {}) as never;
-        
+
         serverContext.cleanup(0);
-        
+
         // Restore original exit after a delay
         setTimeout(() => {
           process.exit = originalExit;
         }, 100);
-        
+
         serverContext = null;
       } catch {
         // Ignore cleanup errors in tests
@@ -65,7 +72,7 @@ describe("Server Lifecycle Integration", () => {
   describe("Server Initialization and Configuration", () => {
     test("should initialize server with valid configuration", async () => {
       serverContext = await createServer();
-      
+
       expect(serverContext).toBeDefined();
       expect(serverContext.server).toBeDefined();
       expect(serverContext.transport).toBeDefined();
@@ -112,23 +119,33 @@ describe("Server Lifecycle Integration", () => {
       // Verify each handler has required metadata
       expect(handlers.getSpaces.feature).toBe("confluence");
       expect(handlers.getSpaces.name).toBe("confluence_get_spaces");
-      expect(handlers.getSpaces.description).toContain("List user's accessible Confluence spaces");
+      expect(handlers.getSpaces.description).toContain(
+        "List user's accessible Confluence spaces",
+      );
 
       expect(handlers.getPage.feature).toBe("confluence");
       expect(handlers.getPage.name).toBe("confluence_get_page");
-      expect(handlers.getPage.description).toContain("Get detailed information about a specific Confluence page");
+      expect(handlers.getPage.description).toContain(
+        "Get detailed information about a specific Confluence page",
+      );
 
       expect(handlers.searchPages.feature).toBe("confluence");
       expect(handlers.searchPages.name).toBe("confluence_search_pages");
-      expect(handlers.searchPages.description).toContain("Search for pages using CQL (Confluence Query Language)");
+      expect(handlers.searchPages.description).toContain(
+        "Search for pages using CQL (Confluence Query Language)",
+      );
 
       expect(handlers.createPage.feature).toBe("confluence");
       expect(handlers.createPage.name).toBe("confluence_create_page");
-      expect(handlers.createPage.description).toContain("Create a new page in Confluence");
+      expect(handlers.createPage.description).toContain(
+        "Create a new page in Confluence",
+      );
 
       expect(handlers.updatePage.feature).toBe("confluence");
       expect(handlers.updatePage.name).toBe("confluence_update_page");
-      expect(handlers.updatePage.description).toContain("Update an existing page in Confluence");
+      expect(handlers.updatePage.description).toContain(
+        "Update an existing page in Confluence",
+      );
     });
 
     test("should handle valid tool requests", async () => {
@@ -171,7 +188,9 @@ describe("Server Lifecycle Integration", () => {
       expect(getPageResult.success).toBe(false);
       expect(getPageResult.error).toBeDefined();
 
-      const searchResult = await handlers.searchPages.handle(undefined as never);
+      const searchResult = await handlers.searchPages.handle(
+        undefined as never,
+      );
       expect(searchResult.success).toBe(false);
       expect(searchResult.error).toBeDefined();
     });
@@ -212,7 +231,7 @@ describe("Server Lifecycle Integration", () => {
       cleanup(0);
 
       // Wait for cleanup to process
-      await new Promise(resolve => setTimeout(resolve, 600)); // Wait longer than cleanup timeout
+      await new Promise((resolve) => setTimeout(resolve, 600)); // Wait longer than cleanup timeout
 
       // Restore original exit
       process.exit = originalExit;
@@ -228,7 +247,7 @@ describe("Server Lifecycle Integration", () => {
       let exitCallCount = 0;
       const originalExit = process.exit;
       const originalSetTimeout = global.setTimeout;
-      
+
       process.exit = ((_code?: number) => {
         exitCallCount++;
         // Don't actually exit in tests
@@ -260,7 +279,7 @@ describe("Server Lifecycle Integration", () => {
       let capturedExitCode: number | undefined;
       const originalExit = process.exit;
       const originalSetTimeout = global.setTimeout;
-      
+
       process.exit = ((_code?: number) => {
         capturedExitCode = _code;
         // Don't actually exit in tests
@@ -285,14 +304,14 @@ describe("Server Lifecycle Integration", () => {
   describe("Error and Signal Handlers", () => {
     test("should setup error handlers correctly", () => {
       const mockCleanup: ServerCleanup = () => {};
-      
+
       // Should not throw when setting up error handlers
       expect(() => setupErrorHandlers(mockCleanup)).not.toThrow();
     });
 
     test("should setup signal handlers correctly", () => {
       const mockCleanup: ServerCleanup = () => {};
-      
+
       // Should not throw when setting up signal handlers
       expect(() => setupSignalHandlers(mockCleanup)).not.toThrow();
     });
@@ -314,7 +333,7 @@ describe("Server Lifecycle Integration", () => {
       };
 
       setupErrorHandlers(testCleanup);
-      
+
       // Verify setup completed without errors
       expect(typeof testCleanup).toBe("function");
     });
@@ -325,7 +344,7 @@ describe("Server Lifecycle Integration", () => {
       };
 
       setupSignalHandlers(testCleanup);
-      
+
       // Verify setup completed without errors
       expect(typeof testCleanup).toBe("function");
     });
@@ -346,7 +365,7 @@ describe("Server Lifecycle Integration", () => {
 
       let closeEventFired = false;
       const originalOnClose = transport.onclose;
-      
+
       transport.onclose = () => {
         closeEventFired = true;
         if (originalOnClose) {
@@ -358,7 +377,7 @@ describe("Server Lifecycle Integration", () => {
       transport.close();
 
       // Wait for event to process
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       expect(closeEventFired).toBe(true);
     });
@@ -407,7 +426,7 @@ describe("Server Lifecycle Integration", () => {
 
     test("should handle server configuration with required fields", () => {
       const config = serverConfig;
-      
+
       expect(config.name).toBeTruthy();
       expect(config.version).toBeTruthy();
       expect(typeof config.name).toBe("string");
@@ -418,7 +437,7 @@ describe("Server Lifecycle Integration", () => {
       const config = new ConfluenceConfig(
         "https://test.atlassian.net/wiki",
         "test-token",
-        "test@example.com"
+        "test@example.com",
       );
 
       const validation = config.validate();
@@ -434,4 +453,4 @@ describe("Server Lifecycle Integration", () => {
       expect(validation.errors.length).toBeGreaterThan(0);
     });
   });
-}); 
+});

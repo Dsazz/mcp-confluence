@@ -1,5 +1,5 @@
-import type { Space } from "../../features/confluence/api/confluence.models.types.js";
-import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces.js";
+import type { Space } from "@features/confluence/api/models.types";
+import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
 
 // Space Mock Builder Implementation
 export class SpaceMockBuilder implements MockBuilder<Space> {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { SearchPagesResponse } from "@features/confluence/api/confluence.responses.types";
+import type { SearchPagesResponse } from "@features/confluence/api/responses.types";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { SearchPagesParams } from "@features/confluence/tools/confluence.tools.types";
+import type { SearchPagesParams } from "@features/confluence/tools/tools.types";
 import { ConfluenceSearchPagesHandler } from "@features/confluence/tools/handlers/search-pages.handler";
 import { mockRegistry } from "../../../../../__mocks__/index";
 
@@ -543,7 +543,7 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s) => s.includes("Use text~\"keyword\" for text search"))).toBe(
+      expect(data.suggestions?.some((s: string) => s.includes("Use text~\"keyword\" for text search"))).toBe(
         true,
       );
     });
@@ -564,7 +564,7 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s) => s.includes("text~\"search\""))).toBe(
+      expect(data.suggestions?.some((s: string) => s.includes("text~\"search\""))).toBe(
         true,
       );
     });
@@ -587,7 +587,7 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s) => s.includes("title~\"very long search query with many words\""))).toBe(
+      expect(data.suggestions?.some((s: string) => s.includes("title~\"very long search query with many words\""))).toBe(
         true,
       );
     });

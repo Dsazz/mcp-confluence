@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, mock } from "bun:test";
 import { ConfluenceGetSpacesHandler } from "@features/confluence/tools/handlers/get-spaces.handler";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { GetSpacesParams } from "@features/confluence/tools/confluence.tools.types";
-import type { GetSpacesResponse } from "@features/confluence/api/confluence.responses.types";
+import type { GetSpacesParams } from "@features/confluence/tools/tools.types";
+import type { GetSpacesResponse } from "@features/confluence/api/responses.types";
 import { mockRegistry } from "../../../../../__mocks__/index";
 
 describe("ConfluenceGetSpacesHandler", () => {

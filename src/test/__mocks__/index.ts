@@ -1,19 +1,19 @@
 // Central Mock Registry - Single point of access for all mock factories
 import type {
+  Comment,
+  SearchResult,
   PaginationInfo,
   ResponseMetadata,
-  SearchResult,
-  Comment,
-} from "../../features/confluence/api/confluence.models.types.js";
+} from "../../features/confluence/api/models.types";
 import type {
   ConfluenceApiSpacesResponse,
   ConfluenceApiSearchResponse,
-} from "../../features/confluence/api/confluence.responses.types.js";
-import type { ConfluenceApiMockRegistry } from "./confluence-api.mock.registry.js";
-import { PageMockFactory } from "./page.mock.factory.js";
-import { SpaceMockFactory } from "./space.mock.factory.js";
-import { ConfluenceErrorMockFactory } from "./error.mock.factory.js";
-import type { MockFactory, BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces.js";
+} from "../../features/confluence/api/responses.types";
+import type { ConfluenceApiMockRegistry } from "./confluence-api.mock.registry";
+import { PageMockFactory } from "./page.mock.factory";
+import { SpaceMockFactory } from "./space.mock.factory";
+import { ConfluenceErrorMockFactory } from "./error.mock.factory";
+import type { MockFactory, BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
 
 // Simple mock factories for supporting entities
 class PaginationMockFactory implements MockFactory<PaginationInfo> {
@@ -374,15 +374,15 @@ class ConfluenceApiMockRegistryImpl implements ConfluenceApiMockRegistry {
 export const mockRegistry = new ConfluenceApiMockRegistryImpl();
 
 // Export individual factories for direct use
-export { PageMockFactory } from "./page.mock.factory.js";
-export { SpaceMockFactory } from "./space.mock.factory.js";
-export { ConfluenceErrorMockFactory } from "./error.mock.factory.js";
+export { PageMockFactory } from "./page.mock.factory";
+export { SpaceMockFactory } from "./space.mock.factory";
+export { ConfluenceErrorMockFactory } from "./error.mock.factory";
 
 // Export types
-export type { ConfluenceApiMockRegistry } from "./confluence-api.mock.registry.js";
+export type { ConfluenceApiMockRegistry } from "./confluence-api.mock.registry";
 export type {
   MockFactory,
   BuildableMockFactory,
   MockBuilder,
   MockScenario,
-} from "./mock-factory.interfaces.js"; 
+} from "./mock-factory.interfaces"; 

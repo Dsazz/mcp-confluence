@@ -1,16 +1,16 @@
 import type {
-  Space,
   Page,
-  SearchResult,
+  Space,
   Comment,
+  SearchResult,
   PaginationInfo,
   ResponseMetadata,
-} from "../../features/confluence/api/confluence.models.types.js";
+} from "@features/confluence/api/models.types";
 import type {
   ConfluenceApiSpacesResponse,
   ConfluenceApiSearchResponse,
   ToolErrorResponse,
-} from "../../features/confluence/api/confluence.responses.types.js";
+} from "@features/confluence/api/responses.types";
 import type {
   BuildableMockFactory,
   MockFactory,

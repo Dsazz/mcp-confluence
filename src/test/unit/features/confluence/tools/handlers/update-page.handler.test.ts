@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { UpdatePageResponse } from "@features/confluence/api/confluence.responses.types";
+import type { UpdatePageResponse } from "@features/confluence/api/responses.types";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { UpdatePageParams } from "@features/confluence/tools/confluence.tools.types";
+import type { UpdatePageParams } from "@features/confluence/tools/tools.types";
 import { ConfluenceUpdatePageHandler } from "@features/confluence/tools/handlers/update-page.handler";
 import { mockRegistry } from "../../../../../__mocks__/index";
 

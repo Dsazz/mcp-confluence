@@ -1,5 +1,5 @@
-import type { Page } from "../../features/confluence/api/confluence.models.types.js";
-import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces.js";
+import type { Page } from "../../features/confluence/api/models.types";
+import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
 
 // Page Mock Builder Implementation
 export class PageMockBuilder implements MockBuilder<Page> {

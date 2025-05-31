@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, mock } from "bun:test";
 import { ConfluenceGetPageHandler } from "@features/confluence/tools/handlers/get-page.handler";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { GetPageParams } from "@features/confluence/tools/confluence.tools.types";
+import type { GetPageParams } from "@features/confluence/tools/tools.types";
 import { mockRegistry } from "./../../../../../__mocks__/index";
 
 describe("ConfluenceGetPageHandler", () => {

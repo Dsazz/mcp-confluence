@@ -1,6 +1,6 @@
-import type { ToolErrorResponse } from "../../features/confluence/api/confluence.responses.types.js";
-import type { ErrorMockFactory } from "./mock-factory.interfaces.js";
-import type { ConfluenceApiError } from "./confluence-api.mock.registry.js";
+import type { ToolErrorResponse } from "../../features/confluence/api/responses.types";
+import type { ErrorMockFactory } from "./mock-factory.interfaces";
+import type { ConfluenceApiError } from "./confluence-api.mock.registry";
 
 // Error Mock Factory for Comprehensive Error Testing
 export class ConfluenceErrorMockFactory implements ErrorMockFactory<ToolErrorResponse> {

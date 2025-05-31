@@ -1,7 +1,7 @@
 // Test Utilities and Helpers for Confluence MCP Server Testing
 
-import type { Page, Space } from "@features/confluence/api/confluence.models.types";
-import type { ToolErrorResponse } from "@features/confluence/api/confluence.responses.types";
+import type { Page, Space } from "@features/confluence/api/models.types";
+import type { ToolErrorResponse } from "@features/confluence/api/responses.types";
 
 // Test assertion helpers
 export namespace TestAssertions {

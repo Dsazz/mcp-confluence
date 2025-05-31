@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import type { ConfluenceClient } from "../../features/confluence/api/index";
-import type { GetSpacesResponse } from "../../features/confluence/api/confluence.responses.types";
-import type { SearchPagesResponse } from "../../features/confluence/api/confluence.responses.types";
+import type { GetSpacesResponse } from "../../features/confluence/api/responses.types";
+import type { SearchPagesResponse } from "../../features/confluence/api/responses.types";
 import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
 import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
 import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";

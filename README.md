@@ -39,6 +39,119 @@
 
 ### Installation
 
+The easiest way to use this MCP server is to install it directly via npm/bunx. No local setup required!
+
+#### For Claude Desktop
+
+Add this configuration to your Claude Desktop MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "Confluence Tools": {
+      "command": "bunx",
+      "args": ["-y", "@dsazz/mcp-confluence@latest"],
+      "env": {
+        "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
+        "CONFLUENCE_USER_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
+      }
+    }
+  }
+}
+```
+
+#### For Cursor IDE
+
+Add this configuration to your Cursor IDE MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "Confluence Tools": {
+      "command": "bunx",
+      "args": ["-y", "@dsazz/mcp-confluence@latest"],
+      "env": {
+        "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
+        "CONFLUENCE_USER_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
+      }
+    }
+  }
+}
+```
+
+#### For Any MCP Client
+
+Use this configuration pattern for any MCP-compatible client:
+
+```json
+{
+  "mcpServers": {
+    "Confluence Tools": {
+      "command": "bunx",
+      "args": ["-y", "@dsazz/mcp-confluence@latest"],
+      "env": {
+        "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
+        "CONFLUENCE_USER_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
+      }
+    }
+  }
+}
+```
+
+> **🔑 Getting Your Confluence API Token**
+>
+> 1. Go to [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+> 2. Click "Create API token"
+> 3. Give it a name (e.g., "MCP Confluence")
+> 4. Copy the token and use it in your configuration
+> 5. **Important**: Use the token exactly as provided (no quotes needed in the env section)
+
+### Alternative: Using npx instead of bunx
+
+If you prefer npx over bunx, you can also use:
+
+```json
+{
+  "mcpServers": {
+    "Confluence Tools": {
+      "command": "npx",
+      "args": ["-y", "@dsazz/mcp-confluence@latest"],
+      "env": {
+        "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
+        "CONFLUENCE_USER_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
+      }
+    }
+  }
+}
+```
+
+### Testing Your Setup
+
+After adding the configuration:
+
+1. Restart your MCP client (Claude Desktop, Cursor, etc.)
+2. Try this command to test the connection:
+   ```
+   Show me my Confluence spaces.
+   ```
+
+That's it! You're ready to use Confluence directly from your MCP client.
+
+---
+
+## 🛠️ Development Setup
+
+<details>
+<summary>Click here if you want to develop or customize this MCP server</summary>
+
+### Development Installation
+
+For development or customization:
+
 ```bash
 # Clone the repository
 git clone https://github.com/Dsazz/mcp-confluence.git
@@ -46,6 +159,9 @@ cd mcp-confluence
 
 # Install dependencies
 bun install
+
+# Build the project
+bun run build
 
 # Set up environment variables
 cp .env.example .env
@@ -59,19 +175,13 @@ Create a `.env` file with the following variables:
 ```ini
 CONFLUENCE_HOST_URL=https://your-domain.atlassian.net
 CONFLUENCE_USER_EMAIL=your-email@example.com
-CONFLUENCE_API_TOKEN=your-confluence-api-token-here
+CONFLUENCE_API_TOKEN=your-confluence-api-token
 NODE_ENV=development
 ```
 
-> **🔑 Important Note About Confluence API Tokens**
->
-> - A Confluence API token can be generated at [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-> - Do not add quotes around the token value
-> - Paste the token exactly as provided by Atlassian
+### Development Tools
 
-## 🛠️ Development Tools
-
-### Code Quality Tools
+#### Code Quality Tools
 
 The project uses [Biome](https://biomejs.dev/) for code formatting and linting, replacing the previous ESLint setup. Biome provides:
 
@@ -93,10 +203,7 @@ bun check
 bun typecheck
 ```
 
-### MCP Inspector
-
-<details>
-<summary>Click to expand MCP Inspector details</summary>
+#### MCP Inspector
 
 The MCP Inspector is a powerful tool for testing and debugging your MCP server.
 
@@ -115,8 +222,6 @@ The inspector automatically:
 
 Visit the inspector at http://localhost:5175?proxyPort=3002
 
-#### Debugging with the Inspector
-
 The inspector UI allows you to:
 
 - View all available MCP capabilities
@@ -127,72 +232,6 @@ The inspector UI allows you to:
 For more details, see the [MCP Inspector GitHub repository](https://github.com/modelcontextprotocol/inspector).
 
 </details>
-
-### Integration with Claude Desktop
-
-<details>
-<summary>Click to expand Claude Desktop integration</summary>
-
-Test your MCP server directly with Claude:
-
-1. Build:
-
-   ```bash
-   bun run build  # You must build the project before running it
-   ```
-
-2. Configure Claude Desktop:
-
-   ```bash
-   nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
-   ```
-
-3. Add the MCP configuration:
-
-   ```json
-   {
-     "mcpServers": {
-       "Confluence Tools": {
-         "command": "node", //or "bun"
-         "args": ["/absolute/path/to/your/project/dist/index.js"],
-         "env": {
-           "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
-           "CONFLUENCE_USER_EMAIL": "your-email@example.com",
-           "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
-         }
-       }
-     }
-   }
-   ```
-
-4. Restart Claude Desktop and test with:
-   ```
-   Show me my Confluence spaces.
-   ```
-
-</details>
-
-## 🔌 Integration with Cursor IDE
-
-> **⚠️ Important:** You must build the project with `bun run build` before integrating with Cursor IDE or Claude Desktop.
-
-Add this MCP server to your Cursor IDE's MCP configuration:
-
-```json
-{
-  "mcpServers": {
-    "Confluence Tools": {
-      "command": "node", // or "bun"
-      "args": ["/absolute/path/to/your/project/dist/index.js"],
-      "env": {
-        "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
-        "CONFLUENCE_USER_EMAIL": "your-email@example.com",
-        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
-      }
-    }
-  }
-}
-```
 
 ## 🧰 Available Tools
 
@@ -387,6 +426,90 @@ This architecture ensures:
 | `bun typecheck` | Run TypeScript type checking                       |
 | `bun test`      | Run tests                                          |
 | `bun inspect`   | Start the MCP Inspector for debugging              |
+
+## 🔧 Troubleshooting
+
+### NPM Installation Issues
+
+#### Package Not Found
+
+If you get a "package not found" error:
+
+```bash
+# Make sure you're using the correct scoped package name
+bunx @dsazz/mcp-confluence@latest
+
+# Or try with explicit npm registry
+npm install -g @dsazz/mcp-confluence --registry https://registry.npmjs.org
+```
+
+#### Environment Variables Not Found
+
+If the server fails to start with environment variable errors:
+
+1. **For bunx usage**: Create a `.env` file in your working directory:
+
+   ```bash
+   # Create .env file in your current directory
+   echo "CONFLUENCE_HOST_URL=https://your-domain.atlassian.net" > .env
+   echo "CONFLUENCE_USER_EMAIL=your-email@example.com" >> .env
+   echo "CONFLUENCE_API_TOKEN=your-api-token" >> .env
+   ```
+
+2. **For MCP configuration**: Set environment variables in your MCP config:
+   ```json
+   {
+     "mcpServers": {
+       "Confluence Tools": {
+         "command": "bunx",
+         "args": ["-y", "@dsazz/mcp-confluence@latest"],
+         "env": {
+           "CONFLUENCE_HOST_URL": "https://your-domain.atlassian.net",
+           "CONFLUENCE_USER_EMAIL": "your-email@example.com",
+           "CONFLUENCE_API_TOKEN": "your-api-token"
+         }
+       }
+     }
+   }
+   ```
+
+### API Connection Issues
+
+#### Invalid Credentials
+
+- Verify your Confluence API token is correct
+- Ensure your email matches your Atlassian account
+- Check that your Confluence URL is correct (include https://)
+
+#### Network/Firewall Issues
+
+- Ensure your network allows connections to your Confluence instance
+- Check if your organization requires VPN access
+- Verify firewall settings allow outbound HTTPS connections
+
+### Development Issues
+
+#### Build Failures
+
+```bash
+# Clear dependencies and reinstall
+rm -rf node_modules bun.lockb
+bun install
+
+# Clean build
+rm -rf dist
+bun run build
+```
+
+#### TypeScript Errors
+
+```bash
+# Run type checking
+bun run typecheck
+
+# Check for linting issues
+bun run check
+```
 
 ## 📝 Contributing
 

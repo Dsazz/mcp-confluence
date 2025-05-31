@@ -1,14 +1,14 @@
-import { describe, test, expect, beforeEach, afterEach, mock } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { ConfluenceClient } from "../../../../../features/confluence/api/client.impl";
 import { ConfluenceConfig } from "../../../../../features/confluence/api/config.types";
-import type { ConfluenceHttpClientFactory } from "../../../../../features/confluence/api/http-client.factory";
 import type { IConfluenceHttpClient } from "../../../../../features/confluence/api/http-client.abstract.base";
-import { mockRegistry } from "../../../../__mocks__/index";
+import type { ConfluenceHttpClientFactory } from "../../../../../features/confluence/api/http-client.factory";
 import type {
-  ConfluenceApiSpacesResponse,
-  ConfluenceApiSearchResponse,
   ConfluenceApiCommentsResponse,
+  ConfluenceApiSearchResponse,
+  ConfluenceApiSpacesResponse,
 } from "../../../../../features/confluence/api/responses.types";
+import { mockRegistry } from "../../../../__mocks__/index";
 
 interface MockHttpClient extends IConfluenceHttpClient {
   sendRequest: ReturnType<typeof mock>;
@@ -27,7 +27,7 @@ describe("ConfluenceClient", () => {
     mockConfig = new ConfluenceConfig(
       "https://test.atlassian.net",
       "test-api-token",
-      "test@example.com"
+      "test@example.com",
     );
 
     // Create mock HTTP clients
@@ -51,7 +51,11 @@ describe("ConfluenceClient", () => {
     confluenceClient = new ConfluenceClient(mockConfig);
 
     // Replace the internal factory with our mock
-    (confluenceClient as unknown as { httpClientFactory: ConfluenceHttpClientFactory }).httpClientFactory = mockHttpClientFactory;
+    (
+      confluenceClient as unknown as {
+        httpClientFactory: ConfluenceHttpClientFactory;
+      }
+    ).httpClientFactory = mockHttpClientFactory;
   });
 
   afterEach(() => {
@@ -73,13 +77,17 @@ describe("ConfluenceClient", () => {
 
     test("should throw error for missing API token", () => {
       expect(() => {
-        new ConfluenceClient(new ConfluenceConfig("https://test.com", "", "email"));
+        new ConfluenceClient(
+          new ConfluenceConfig("https://test.com", "", "email"),
+        );
       }).toThrow("Confluence API token is required");
     });
 
     test("should throw error for missing user email", () => {
       expect(() => {
-        new ConfluenceClient(new ConfluenceConfig("https://test.com", "token", ""));
+        new ConfluenceClient(
+          new ConfluenceConfig("https://test.com", "token", ""),
+        );
       }).toThrow("User email is required for API token authentication");
     });
   });
@@ -301,7 +309,11 @@ describe("ConfluenceClient", () => {
       const mockPage = mockRegistry.pages.create({
         id: "page-123",
         title: "Updated Page",
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
 
       mockV2Client.sendRequest.mockResolvedValue(mockPage);
@@ -554,14 +566,18 @@ describe("ConfluenceClient", () => {
       const error = new Error("Network error");
       mockV2Client.sendRequest.mockRejectedValue(error);
 
-      await expect(confluenceClient.getSpaces()).rejects.toThrow("Network error");
+      await expect(confluenceClient.getSpaces()).rejects.toThrow(
+        "Network error",
+      );
     });
 
     test("should handle API errors in all methods", async () => {
       const apiError = new Error("API Error");
       mockV2Client.sendRequest.mockRejectedValue(apiError);
 
-      await expect(confluenceClient.getPage("123")).rejects.toThrow("API Error");
+      await expect(confluenceClient.getPage("123")).rejects.toThrow(
+        "API Error",
+      );
     });
   });
 
@@ -620,4 +636,4 @@ describe("ConfluenceClient", () => {
       expect(result.pagination.hasMore).toBe(false);
     });
   });
-}); 
+});

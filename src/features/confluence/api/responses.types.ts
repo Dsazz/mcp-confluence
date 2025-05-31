@@ -1,14 +1,14 @@
 import type {
-  Space,
+  BasicPageInfo,
+  BasicSpaceInfo,
+  Comment,
   Page,
-  SearchResult,
+  PageBreadcrumb,
   PaginationInfo,
   ResponseMetadata,
+  SearchResult,
+  Space,
   SuggestedAction,
-  BasicSpaceInfo,
-  BasicPageInfo,
-  PageBreadcrumb,
-  Comment,
 } from "./models.types";
 
 // Base response structure for all tools

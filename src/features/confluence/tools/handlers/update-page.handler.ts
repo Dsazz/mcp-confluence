@@ -1,9 +1,9 @@
-import { BaseToolHandler } from "@core/tools/tool-handler.class";
-import type { UpdatePageResponse, Page } from "../../api/index";
-import type { ConfluenceClient } from "../../api/index";
-import type { UpdatePageParams } from "../tools.types";
-import type { Space } from "../../api/models.types";
 import { logger } from "@core/logging";
+import { BaseToolHandler } from "@core/tools/tool-handler.class";
+import type { Page, UpdatePageResponse } from "../../api/index";
+import type { ConfluenceClient } from "../../api/index";
+import type { Space } from "../../api/models.types";
+import type { UpdatePageParams } from "../tools.types";
 
 export class ConfluenceUpdatePageHandler extends BaseToolHandler<
   UpdatePageParams,
@@ -29,7 +29,7 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
     // Verify version number
     if (currentPage.version.number !== validatedParams.versionNumber) {
       throw new Error(
-        `Version mismatch. Current version is ${currentPage.version.number}, but you provided ${validatedParams.versionNumber}. Please refresh and try again.`
+        `Version mismatch. Current version is ${currentPage.version.number}, but you provided ${validatedParams.versionNumber}. Please refresh and try again.`,
       );
     }
 
@@ -37,15 +37,18 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
     const updatedPage = await this.updatePage(validatedParams, currentPage);
 
     // Determine what changed
-    const changes = this.detectChanges(currentPage, updatedPage, validatedParams);
+    const changes = this.detectChanges(
+      currentPage,
+      updatedPage,
+      validatedParams,
+    );
 
     // Get additional context information
     const context = await this.getPageContext(updatedPage);
 
-    logger.info(
-      `Updated page "${updatedPage.title}" (ID: ${updatedPage.id})`,
-      { prefix: "CONFLUENCE" }
-    );
+    logger.info(`Updated page "${updatedPage.title}" (ID: ${updatedPage.id})`, {
+      prefix: "CONFLUENCE",
+    });
 
     return {
       page: updatedPage,
@@ -68,7 +71,9 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
     }
 
     if (typeof params.versionNumber !== "number" || params.versionNumber < 1) {
-      throw new Error("versionNumber is required and must be a positive number");
+      throw new Error(
+        "versionNumber is required and must be a positive number",
+      );
     }
 
     // At least one of title or content must be provided
@@ -105,7 +110,10 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
 
     if (params.contentFormat && typeof params.contentFormat === "string") {
       if (["storage", "editor", "wiki"].includes(params.contentFormat)) {
-        validatedParams.contentFormat = params.contentFormat as "storage" | "editor" | "wiki";
+        validatedParams.contentFormat = params.contentFormat as
+          | "storage"
+          | "editor"
+          | "wiki";
       } else {
         throw new Error(
           `Invalid contentFormat parameter: ${params.contentFormat}. Must be 'storage', 'editor', or 'wiki'`,
@@ -126,21 +134,28 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
         includeContent: true,
       });
     } catch (error) {
-      logger.error("Failed to get current page", { 
+      logger.error("Failed to get current page", {
         error: error instanceof Error ? error.message : String(error),
         pageId,
-        prefix: "CONFLUENCE"
+        prefix: "CONFLUENCE",
       });
-      
+
       if (error instanceof Error && error.message.includes("not found")) {
-        throw new Error(`Page not found: ${pageId}. Please verify the page ID.`);
+        throw new Error(
+          `Page not found: ${pageId}. Please verify the page ID.`,
+        );
       }
-      
-      throw new Error(`Failed to get current page: ${error instanceof Error ? error.message : String(error)}`);
+
+      throw new Error(
+        `Failed to get current page: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
-  private async updatePage(params: UpdatePageParams, currentPage: Page): Promise<Page> {
+  private async updatePage(
+    params: UpdatePageParams,
+    currentPage: Page,
+  ): Promise<Page> {
     // Prepare the update data
     const updateData = {
       id: params.pageId,
@@ -164,35 +179,52 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
     try {
       // Note: This assumes the ConfluenceClient has an updatePage method
       // If not, we'll need to add it to the client implementation
-      const response = await this.confluenceClient.updatePage(params.pageId, updateData);
+      const response = await this.confluenceClient.updatePage(
+        params.pageId,
+        updateData,
+      );
       return response;
     } catch (error) {
-      logger.error("Failed to update page", { 
+      logger.error("Failed to update page", {
         error: error instanceof Error ? error.message : String(error),
         pageId: params.pageId,
-        prefix: "CONFLUENCE"
+        prefix: "CONFLUENCE",
       });
-      
+
       if (error instanceof Error) {
         if (error.message.includes("Permission denied")) {
-          throw new Error("Permission denied. You don't have permission to edit this page.");
+          throw new Error(
+            "Permission denied. You don't have permission to edit this page.",
+          );
         }
         if (error.message.includes("Version conflict")) {
-          throw new Error("Version conflict. The page has been modified by another user. Please refresh and try again.");
+          throw new Error(
+            "Version conflict. The page has been modified by another user. Please refresh and try again.",
+          );
         }
         if (error.message.includes("Title already exists")) {
-          throw new Error(`A page with title "${params.title}" already exists in this space.`);
+          throw new Error(
+            `A page with title "${params.title}" already exists in this space.`,
+          );
         }
       }
-      
-      throw new Error(`Failed to update page: ${error instanceof Error ? error.message : String(error)}`);
+
+      throw new Error(
+        `Failed to update page: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
-  private detectChanges(currentPage: Page, _updatedPage: Page, params: UpdatePageParams) {
+  private detectChanges(
+    currentPage: Page,
+    _updatedPage: Page,
+    params: UpdatePageParams,
+  ) {
     return {
       title: !!(params.title && params.title !== currentPage.title),
-      content: !!(params.content && params.content !== currentPage.body?.storage?.value),
+      content: !!(
+        params.content && params.content !== currentPage.body?.storage?.value
+      ),
       status: !!(params.status && params.status !== currentPage.status),
     };
   }
@@ -200,12 +232,12 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
   private async getPageContext(page: Page) {
     try {
       // Get space information
-      const spaces = await this.confluenceClient.getSpaces({ 
-        limit: 1000 // Get all spaces to find the one containing our page
+      const spaces = await this.confluenceClient.getSpaces({
+        limit: 1000, // Get all spaces to find the one containing our page
       });
-      
+
       const space = spaces.spaces.find((s: Space) => s.id === page.spaceId);
-      
+
       // Generate breadcrumbs
       const breadcrumbs = [];
       if (space) {
@@ -217,7 +249,7 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
           },
         });
       }
-      
+
       // Add parent breadcrumbs if this page has a parent
       if (page.parentId) {
         try {
@@ -230,44 +262,46 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
             },
           });
         } catch (_error) {
-          logger.warn("Failed to get parent page for breadcrumbs", { 
+          logger.warn("Failed to get parent page for breadcrumbs", {
             parentId: page.parentId,
-            prefix: "CONFLUENCE"
+            prefix: "CONFLUENCE",
           });
         }
       }
 
       return {
-        space: space ? {
-          id: space.id,
-          key: space.key,
-          name: space.name,
-          type: space.type,
-          _links: {
-            webui: space._links.webui,
-          },
-        } : {
-          id: page.spaceId,
-          key: "unknown",
-          name: "Unknown Space",
-          type: "global" as const,
-          _links: {
-            webui: `/spaces/${page.spaceId}`,
-          },
-        },
+        space: space
+          ? {
+              id: space.id,
+              key: space.key,
+              name: space.name,
+              type: space.type,
+              _links: {
+                webui: space._links.webui,
+              },
+            }
+          : {
+              id: page.spaceId,
+              key: "unknown",
+              name: "Unknown Space",
+              type: "global" as const,
+              _links: {
+                webui: `/spaces/${page.spaceId}`,
+              },
+            },
         breadcrumbs,
       };
     } catch (error) {
-      logger.warn("Failed to get page context", { 
+      logger.warn("Failed to get page context", {
         error: error instanceof Error ? error.message : String(error),
-        prefix: "CONFLUENCE"
+        prefix: "CONFLUENCE",
       });
-      
+
       return {
         space: {
           id: page.spaceId,
           key: "unknown",
-          name: "Unknown Space", 
+          name: "Unknown Space",
           type: "global" as const,
           _links: {
             webui: `/spaces/${page.spaceId}`,
@@ -277,4 +311,4 @@ export class ConfluenceUpdatePageHandler extends BaseToolHandler<
       };
     }
   }
-} 
+}

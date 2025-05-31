@@ -1,6 +1,6 @@
-import { describe, test, expect } from "bun:test";
-import { ValidationError } from "../../../../core/errors/validation.error";
+import { describe, expect, test } from "bun:test";
 import { McpError } from "../../../../core/errors/mcp.error";
+import { ValidationError } from "../../../../core/errors/validation.error";
 
 describe("ValidationError", () => {
   describe("constructor", () => {
@@ -111,12 +111,12 @@ describe("ValidationError", () => {
     test("should be JSON.stringify compatible", () => {
       const context = { field: "password", errors: ["minLength", "required"] };
       const error = new ValidationError("Password validation failed", context);
-      
+
       expect(() => JSON.stringify(error.toJSON())).not.toThrow();
-      
+
       const serialized = JSON.stringify(error.toJSON());
       const parsed = JSON.parse(serialized);
-      
+
       expect(parsed.name).toBe("ValidationError");
       expect(parsed.code).toBe("VALIDATION_ERROR");
       expect(parsed.context).toEqual(context);
@@ -182,7 +182,8 @@ describe("ValidationError", () => {
     });
 
     test("should handle special characters in message", () => {
-      const specialMessage = "Validation failed: 🚨 Invalid data with\nnewlines";
+      const specialMessage =
+        "Validation failed: 🚨 Invalid data with\nnewlines";
       const error = new ValidationError(specialMessage);
       expect(error.message).toBe(specialMessage);
     });
@@ -193,4 +194,4 @@ describe("ValidationError", () => {
       expect(error.context?.value).toBeNull();
     });
   });
-}); 
+});

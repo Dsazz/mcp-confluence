@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { UpdatePageResponse } from "@features/confluence/api/responses.types";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { UpdatePageParams } from "@features/confluence/tools/tools.types";
+import type { UpdatePageResponse } from "@features/confluence/api/responses.types";
 import { ConfluenceUpdatePageHandler } from "@features/confluence/tools/handlers/update-page.handler";
+import type { UpdatePageParams } from "@features/confluence/tools/tools.types";
 import { mockRegistry } from "../../../../../__mocks__/index";
 
 describe("ConfluenceUpdatePageHandler", () => {
@@ -328,10 +328,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should accept valid contentFormat parameter - storage", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -352,10 +360,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should accept valid contentFormat parameter - editor", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -376,10 +392,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should accept valid contentFormat parameter - wiki", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -414,10 +438,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should accept valid versionMessage parameter", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -438,10 +470,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should accept all valid parameters together", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -499,7 +539,11 @@ describe("ConfluenceUpdatePageHandler", () => {
   describe("Version Checking", () => {
     test("should throw error when version number doesn't match current page", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 5, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 5,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -520,10 +564,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should proceed when version number matches current page", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 3, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 3,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 4, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 4,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -546,10 +598,18 @@ describe("ConfluenceUpdatePageHandler", () => {
   describe("API Integration", () => {
     test("should call getPage to get current page", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const getPageMock = mock(() => Promise.resolve(mockCurrentPage));
       mockConfluenceClient.getPage = getPageMock;
@@ -574,10 +634,18 @@ describe("ConfluenceUpdatePageHandler", () => {
         id: "123456",
         title: "Original Title",
         status: "current",
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const updatePageMock = mock(() => Promise.resolve(mockUpdatedPage));
       mockConfluenceClient.getPage = mock(() =>
@@ -619,10 +687,18 @@ describe("ConfluenceUpdatePageHandler", () => {
         id: "123456",
         title: "Original Title",
         status: "current",
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const updatePageMock = mock(() => Promise.resolve(mockUpdatedPage));
       mockConfluenceClient.getPage = mock(() =>
@@ -650,10 +726,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should call getSpaces to build context", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockSpaces = mockRegistry.spaces.createMany(3);
       mockConfluenceClient.getPage = mock(() =>
@@ -720,7 +804,11 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle permission denied error when updating", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -744,7 +832,11 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle version conflict error when updating", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -768,7 +860,11 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle title already exists error when updating", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -792,7 +888,11 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle generic API errors when updating", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -816,7 +916,11 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle non-Error exceptions when updating", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -840,10 +944,18 @@ describe("ConfluenceUpdatePageHandler", () => {
   describe("Response Formatting", () => {
     test("should return response with page, updated flag, timestamps, versions, changes, and context", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockSpaces = mockRegistry.spaces.createMany(3);
       mockConfluenceClient.getPage = mock(() =>
@@ -882,10 +994,18 @@ describe("ConfluenceUpdatePageHandler", () => {
     test("should detect title changes correctly", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
         title: "Original Title",
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -950,10 +1070,18 @@ describe("ConfluenceUpdatePageHandler", () => {
     test("should detect status changes correctly", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
         status: "current",
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -1020,11 +1148,19 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should include space information in context when space is found", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
         spaceId: "SPACE1",
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockSpace = mockRegistry.spaces.create({ id: "SPACE1" });
       mockConfluenceClient.getPage = mock(() =>
@@ -1055,11 +1191,19 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should include parent page in breadcrumbs when parentId exists", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
         parentId: "PARENT123",
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockParentPage = mockRegistry.pages.create({ id: "PARENT123" });
       const mockSpace = mockRegistry.spaces.create({
@@ -1096,10 +1240,18 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle context building errors gracefully", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       mockConfluenceClient.getPage = mock(() =>
         Promise.resolve(mockCurrentPage),
@@ -1126,11 +1278,19 @@ describe("ConfluenceUpdatePageHandler", () => {
 
     test("should handle parent page fetch errors gracefully", async () => {
       const mockCurrentPage = mockRegistry.pages.create({
-        version: { number: 1, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 1,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockUpdatedPage = mockRegistry.pages.create({
         parentId: "PARENT123",
-        version: { number: 2, createdAt: "2024-01-01T00:00:00.000Z", authorId: "user123" },
+        version: {
+          number: 2,
+          createdAt: "2024-01-01T00:00:00.000Z",
+          authorId: "user123",
+        },
       });
       const mockSpace = mockRegistry.spaces.create({
         id: mockUpdatedPage.spaceId,

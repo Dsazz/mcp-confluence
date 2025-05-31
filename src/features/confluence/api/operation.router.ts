@@ -1,7 +1,7 @@
 /**
  * Operation types supported by the Confluence API
  */
-export type ConfluenceOperation = 
+export type ConfluenceOperation =
   | "search"
   | "getSpaces"
   | "getPage"
@@ -28,7 +28,7 @@ export interface OperationVersionMap {
 const DEFAULT_OPERATION_VERSION_MAP: OperationVersionMap = {
   // v1 API operations (legacy REST API with CQL support)
   search: "v1",
-  
+
   // v2 API operations (modern REST API)
   getSpaces: "v2",
   getPage: "v2",
@@ -60,16 +60,18 @@ export class ConfluenceOperationRouter {
 
   constructor(config: OperationRouterConfig = {}) {
     this.operationMap = { ...DEFAULT_OPERATION_VERSION_MAP };
-    
+
     // Apply custom mappings if provided
     if (config.customMappings) {
-      for (const [operation, version] of Object.entries(config.customMappings)) {
+      for (const [operation, version] of Object.entries(
+        config.customMappings,
+      )) {
         if (version) {
           this.operationMap[operation] = version;
         }
       }
     }
-    
+
     this.fallbackVersion = config.fallbackVersion || "v2";
   }
 
@@ -124,7 +126,10 @@ export class ConfluenceOperationRouter {
    * @param operation - The operation to update
    * @param version - The API version to map to
    */
-  setOperationVersion(operation: ConfluenceOperation, version: "v1" | "v2"): void {
+  setOperationVersion(
+    operation: ConfluenceOperation,
+    version: "v1" | "v2",
+  ): void {
     this.operationMap[operation] = version;
   }
 
@@ -141,11 +146,11 @@ export class ConfluenceOperationRouter {
    */
   getVersionDistribution(): { v1: number; v2: number } {
     const distribution = { v1: 0, v2: 0 };
-    
+
     for (const version of Object.values(this.operationMap)) {
       distribution[version]++;
     }
-    
+
     return distribution;
   }
 }
@@ -153,4 +158,4 @@ export class ConfluenceOperationRouter {
 /**
  * Default operation router instance with standard mappings
  */
-export const defaultOperationRouter = new ConfluenceOperationRouter(); 
+export const defaultOperationRouter = new ConfluenceOperationRouter();

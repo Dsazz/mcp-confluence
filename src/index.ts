@@ -6,11 +6,11 @@
  * Main entry point for the Confluence Model Context Protocol server
  */
 
-import { config } from "dotenv";
 import { normalizeError } from "@core/errors/index";
 import { logger } from "@core/logging/index";
 import { startServer } from "@core/server/index";
 import { registerFeatures } from "@features/index";
+import { config } from "dotenv";
 
 /**
  * Bootstrap the application

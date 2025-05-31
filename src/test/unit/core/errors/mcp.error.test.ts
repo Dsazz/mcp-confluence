@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { McpError } from "../../../../core/errors/mcp.error";
 
 describe("McpError", () => {
@@ -143,10 +143,10 @@ describe("McpError", () => {
       const json = error.toJSON();
 
       expect(() => JSON.stringify(json)).not.toThrow();
-      
+
       const serialized = JSON.stringify(json);
       const parsed = JSON.parse(serialized);
-      
+
       expect(parsed).toEqual(json);
     });
   });
@@ -171,7 +171,11 @@ describe("McpError", () => {
     });
 
     test("should handle null context", () => {
-      const error = new McpError("Test error", "TEST_CODE", null as unknown as Record<string, unknown>);
+      const error = new McpError(
+        "Test error",
+        "TEST_CODE",
+        null as unknown as Record<string, unknown>,
+      );
       expect(error.context).toBeNull();
     });
   });
@@ -205,4 +209,4 @@ describe("McpError", () => {
       expect(error.code).toBe(specialCode);
     });
   });
-}); 
+});

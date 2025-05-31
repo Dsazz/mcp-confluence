@@ -1,10 +1,10 @@
-import { beforeEach, afterEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { ConfluenceClient } from "../../features/confluence/api/client.impl";
 import { ConfluenceConfig } from "../../features/confluence/api/config.types";
-import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
-import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
-import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
 import { ConfluenceCreatePageHandler } from "../../features/confluence/tools/handlers/create-page.handler";
+import { ConfluenceGetPageHandler } from "../../features/confluence/tools/handlers/get-page.handler";
+import { ConfluenceGetSpacesHandler } from "../../features/confluence/tools/handlers/get-spaces.handler";
+import { ConfluenceSearchPagesHandler } from "../../features/confluence/tools/handlers/search-pages.handler";
 import { ConfluenceUpdatePageHandler } from "../../features/confluence/tools/handlers/update-page.handler";
 
 describe("End-to-End Workflow Integration", () => {
@@ -23,11 +23,11 @@ describe("End-to-End Workflow Integration", () => {
     config = new ConfluenceConfig(
       "https://test.atlassian.net/wiki",
       "test-token-123",
-      "test@example.com"
+      "test@example.com",
     );
-    
+
     client = new ConfluenceClient(config);
-    
+
     // Initialize all handlers for workflow testing
     handlers = {
       getSpaces: new ConfluenceGetSpacesHandler(client),
@@ -46,7 +46,7 @@ describe("End-to-End Workflow Integration", () => {
     test("should execute complete content discovery workflow", async () => {
       // Workflow: User discovers content by browsing spaces → searching → viewing pages
       const workflowSteps: string[] = [];
-      
+
       try {
         // Step 1: Get available spaces
         workflowSteps.push("Getting spaces");
@@ -60,7 +60,7 @@ describe("End-to-End Workflow Integration", () => {
         const searchResult = await handlers.searchPages.handle({
           query: 'space.key = "TEST" AND type = "page"',
           limit: 5,
-          orderBy: "relevance"
+          orderBy: "relevance",
         });
         expect(searchResult.success).toBe(false); // Auth failure expected
         expect(searchResult.error).toContain("Authentication failed");
@@ -71,7 +71,7 @@ describe("End-to-End Workflow Integration", () => {
         const pageResult = await handlers.getPage.handle({
           pageId: "123456",
           includeContent: true,
-          includeComments: false
+          includeComments: false,
         });
         expect(pageResult.success).toBe(false); // Auth failure expected
         expect(pageResult.error).toContain("Authentication failed");
@@ -82,7 +82,6 @@ describe("End-to-End Workflow Integration", () => {
         expect(workflowSteps).toContain("Getting spaces");
         expect(workflowSteps).toContain("Searching pages");
         expect(workflowSteps).toContain("Getting page details");
-        
       } catch (error) {
         // Log workflow progress for debugging
         console.log("Workflow steps completed:", workflowSteps);
@@ -97,7 +96,7 @@ describe("End-to-End Workflow Integration", () => {
         pageTitle: "Test Workflow Page",
         initialContent: "<p>Initial content for workflow test</p>",
         updatedContent: "<p>Updated content after workflow test</p>",
-        pageId: "workflow-page-123"
+        pageId: "workflow-page-123",
       };
 
       // Step 1: Verify target space exists
@@ -111,7 +110,7 @@ describe("End-to-End Workflow Integration", () => {
         title: workflowData.pageTitle,
         content: workflowData.initialContent,
         contentFormat: "storage",
-        status: "current"
+        status: "current",
       });
       expect(createResult.success).toBe(false); // Auth failure expected
       expect(createResult.error).toContain("Authentication failed");
@@ -123,7 +122,7 @@ describe("End-to-End Workflow Integration", () => {
         content: workflowData.updatedContent,
         contentFormat: "storage",
         versionNumber: 1,
-        versionMessage: "Updated via workflow test"
+        versionMessage: "Updated via workflow test",
       });
       expect(updateResult.success).toBe(false); // Auth failure expected
       expect(updateResult.error).toContain("Authentication failed");
@@ -139,14 +138,14 @@ describe("End-to-End Workflow Integration", () => {
       const managementWorkflow = {
         searchQuery: 'title ~ "workflow" AND space.key = "TEST"',
         targetPageId: "management-test-123",
-        editReason: "Workflow management test update"
+        editReason: "Workflow management test update",
       };
 
       // Step 1: Search for existing content
       const searchResult = await handlers.searchPages.handle({
         query: managementWorkflow.searchQuery,
         limit: 10,
-        orderBy: "modified"
+        orderBy: "modified",
       });
       expect(searchResult.success).toBe(false); // Auth failure expected
 
@@ -154,7 +153,7 @@ describe("End-to-End Workflow Integration", () => {
       const currentPageResult = await handlers.getPage.handle({
         pageId: managementWorkflow.targetPageId,
         includeContent: true,
-        expand: ["version", "space"]
+        expand: ["version", "space"],
       });
       expect(currentPageResult.success).toBe(false); // Auth failure expected
 
@@ -164,14 +163,14 @@ describe("End-to-End Workflow Integration", () => {
         title: "Updated via Management Workflow",
         content: "<p>Content updated through management workflow</p>",
         versionNumber: 2,
-        versionMessage: managementWorkflow.editReason
+        versionMessage: managementWorkflow.editReason,
       });
       expect(updateResult.success).toBe(false); // Auth failure expected
 
       // Step 4: Verify changes were applied
       const verificationResult = await handlers.getPage.handle({
         pageId: managementWorkflow.targetPageId,
-        includeContent: true
+        includeContent: true,
       });
       expect(verificationResult.success).toBe(false); // Auth failure expected
 
@@ -186,31 +185,33 @@ describe("End-to-End Workflow Integration", () => {
     test("should handle complex search and retrieval operations", async () => {
       // Multi-step: Complex search → filter results → batch retrieve details
       const operationSteps = [];
-      
+
       // Step 1: Broad search
       operationSteps.push("broad-search");
       const broadSearchResult = await handlers.searchPages.handle({
         query: 'type = "page"',
         limit: 25,
-        orderBy: "created"
+        orderBy: "created",
       });
       expect(broadSearchResult.success).toBe(false);
-      
+
       // Step 2: Refined search with filters
       operationSteps.push("refined-search");
       const refinedSearchResult = await handlers.searchPages.handle({
         query: 'type = "page" AND space.key = "DOCS"',
         limit: 10,
-        orderBy: "relevance"
+        orderBy: "relevance",
       });
       expect(refinedSearchResult.success).toBe(false);
-      
+
       // Step 3: Batch page retrieval (simulated)
       operationSteps.push("batch-retrieval");
       const pageIds = ["page-1", "page-2", "page-3"];
-      const batchPromises = pageIds.map(id => handlers.getPage.handle({ pageId: id }));
+      const batchPromises = pageIds.map((id) =>
+        handlers.getPage.handle({ pageId: id }),
+      );
       const batchResults = await Promise.allSettled(batchPromises);
-      
+
       expect(batchResults).toHaveLength(3);
       for (const result of batchResults) {
         expect(result.status).toBe("fulfilled");
@@ -218,15 +219,19 @@ describe("End-to-End Workflow Integration", () => {
           expect(result.value.success).toBe(false); // Auth failure expected
         }
       }
-      
-      expect(operationSteps).toEqual(["broad-search", "refined-search", "batch-retrieval"]);
+
+      expect(operationSteps).toEqual([
+        "broad-search",
+        "refined-search",
+        "batch-retrieval",
+      ]);
     });
 
     test("should handle space exploration and content analysis", async () => {
       // Multi-step: Get spaces → analyze each space → get sample content
       const explorationData = {
         spacesAnalyzed: 0,
-        contentSampled: 0
+        contentSampled: 0,
       };
 
       // Step 1: Get all accessible spaces
@@ -236,12 +241,12 @@ describe("End-to-End Workflow Integration", () => {
 
       // Step 2: For each space, get sample content (simulated with test data)
       const testSpaceKeys = ["TEST", "DOCS", "PROJ"];
-      
+
       for (const spaceKey of testSpaceKeys) {
         const spaceContentResult = await handlers.searchPages.handle({
           query: `space.key = "${spaceKey}"`,
           limit: 3,
-          orderBy: "created"
+          orderBy: "created",
         });
         expect(spaceContentResult.success).toBe(false);
         explorationData.contentSampled++;
@@ -258,7 +263,7 @@ describe("End-to-End Workflow Integration", () => {
         pageId: "lifecycle-test-123",
         spaceId: "test-space-456",
         versions: [] as number[],
-        operations: [] as string[]
+        operations: [] as string[],
       };
 
       // Step 1: Create initial page
@@ -267,7 +272,7 @@ describe("End-to-End Workflow Integration", () => {
         spaceId: lifecycleData.spaceId,
         title: "Lifecycle Test Page",
         content: "<p>Initial lifecycle content</p>",
-        status: "current"
+        status: "current",
       });
       expect(createResult.success).toBe(false);
       lifecycleData.versions.push(1);
@@ -276,7 +281,7 @@ describe("End-to-End Workflow Integration", () => {
       lifecycleData.operations.push("read-initial");
       const readInitialResult = await handlers.getPage.handle({
         pageId: lifecycleData.pageId,
-        includeContent: true
+        includeContent: true,
       });
       expect(readInitialResult.success).toBe(false);
 
@@ -287,7 +292,7 @@ describe("End-to-End Workflow Integration", () => {
         title: "Updated Lifecycle Test Page",
         content: "<p>Updated lifecycle content</p>",
         versionNumber: 1,
-        versionMessage: "Lifecycle test update"
+        versionMessage: "Lifecycle test update",
       });
       expect(updateResult.success).toBe(false);
       lifecycleData.versions.push(2);
@@ -296,13 +301,16 @@ describe("End-to-End Workflow Integration", () => {
       lifecycleData.operations.push("read-updated");
       const readUpdatedResult = await handlers.getPage.handle({
         pageId: lifecycleData.pageId,
-        includeContent: true
+        includeContent: true,
       });
       expect(readUpdatedResult.success).toBe(false);
 
       // Verify lifecycle progression
       expect(lifecycleData.operations).toEqual([
-        "create", "read-initial", "update", "read-updated"
+        "create",
+        "read-initial",
+        "update",
+        "read-updated",
       ]);
       expect(lifecycleData.versions).toEqual([1, 2]);
     });
@@ -315,16 +323,16 @@ describe("End-to-End Workflow Integration", () => {
         input: {
           spaceId: "data-flow-space",
           pageTitle: "Data Flow Test",
-          content: "<p>Test content for data flow validation</p>"
+          content: "<p>Test content for data flow validation</p>",
         },
         processing: {
           operationsExecuted: [] as string[],
-          dataTransformations: [] as string[]
+          dataTransformations: [] as string[],
         },
         output: {
           results: [] as unknown[],
-          validationErrors: [] as string[]
-        }
+          validationErrors: [] as string[],
+        },
       };
 
       // Input validation
@@ -335,20 +343,22 @@ describe("End-to-End Workflow Integration", () => {
       // Processing simulation
       testData.processing.operationsExecuted.push("create-page");
       testData.processing.dataTransformations.push("html-to-storage");
-      
+
       const createResult = await handlers.createPage.handle({
         spaceId: testData.input.spaceId,
         title: testData.input.pageTitle,
         content: testData.input.content,
-        contentFormat: "storage"
+        contentFormat: "storage",
       });
-      
+
       testData.output.results.push(createResult);
-      
+
       // Output validation
       expect(createResult.success).toBe(false); // Auth failure expected
       expect(testData.processing.operationsExecuted).toContain("create-page");
-      expect(testData.processing.dataTransformations).toContain("html-to-storage");
+      expect(testData.processing.dataTransformations).toContain(
+        "html-to-storage",
+      );
       expect(testData.output.results).toHaveLength(1);
     });
 
@@ -358,37 +368,43 @@ describe("End-to-End Workflow Integration", () => {
         step1: {
           operation: "getSpaces",
           input: { limit: 10, type: "global" as const },
-          output: null as unknown
+          output: null as unknown,
         },
         step2: {
           operation: "searchPages",
           input: null as unknown,
-          output: null as unknown
+          output: null as unknown,
         },
         step3: {
           operation: "getPage",
           input: null as unknown,
-          output: null as unknown
-        }
+          output: null as unknown,
+        },
       };
 
       // Step 1: Get spaces
-      parameterFlow.step1.output = await handlers.getSpaces.handle(parameterFlow.step1.input);
+      parameterFlow.step1.output = await handlers.getSpaces.handle(
+        parameterFlow.step1.input,
+      );
       expect(parameterFlow.step1.output).toBeDefined();
 
       // Step 2: Use space data for search (simulated parameter flow)
       parameterFlow.step2.input = {
         query: 'space.key = "TEST"', // Would normally come from step1 output
-        limit: 5
+        limit: 5,
       };
-      parameterFlow.step2.output = await handlers.searchPages.handle(parameterFlow.step2.input);
+      parameterFlow.step2.output = await handlers.searchPages.handle(
+        parameterFlow.step2.input,
+      );
       expect(parameterFlow.step2.output).toBeDefined();
 
       // Step 3: Use search results for page retrieval (simulated parameter flow)
       parameterFlow.step3.input = {
-        pageId: "test-page-123" // Would normally come from step2 output
+        pageId: "test-page-123", // Would normally come from step2 output
       };
-      parameterFlow.step3.output = await handlers.getPage.handle(parameterFlow.step3.input);
+      parameterFlow.step3.output = await handlers.getPage.handle(
+        parameterFlow.step3.input,
+      );
       expect(parameterFlow.step3.output).toBeDefined();
 
       // Validate parameter flow integrity
@@ -402,15 +418,15 @@ describe("End-to-End Workflow Integration", () => {
       const errorFlow = {
         errors: [] as string[],
         recoveryActions: [] as string[],
-        finalState: "unknown"
+        finalState: "unknown",
       };
 
       try {
         // Step 1: Operation that will fail
         const failingResult = await handlers.getPage.handle({
-          pageId: "" // Invalid empty pageId
+          pageId: "", // Invalid empty pageId
         });
-        
+
         if (!failingResult.success) {
           errorFlow.errors.push("Invalid pageId parameter");
           errorFlow.recoveryActions.push("Validate input parameters");
@@ -424,7 +440,6 @@ describe("End-to-End Workflow Integration", () => {
         }
 
         errorFlow.finalState = "error-handled";
-
       } catch (error) {
         errorFlow.errors.push(`Unexpected error: ${error}`);
         errorFlow.finalState = "error-unhandled";
@@ -440,14 +455,14 @@ describe("End-to-End Workflow Integration", () => {
       // Test concurrent operations maintain data integrity
       const concurrentData = {
         startTime: Date.now(),
-        endTime: 0
+        endTime: 0,
       };
 
       // Launch concurrent operations
       const operations = [
         handlers.getSpaces.handle({ limit: 10 }),
         handlers.searchPages.handle({ query: "test", limit: 5 }),
-        handlers.getPage.handle({ pageId: "concurrent-test-123" })
+        handlers.getPage.handle({ pageId: "concurrent-test-123" }),
       ];
 
       // Wait for all operations to complete
@@ -457,11 +472,11 @@ describe("End-to-End Workflow Integration", () => {
       // Validate concurrent execution
       expect(results).toHaveLength(3);
       expect(concurrentData.endTime).toBeGreaterThan(concurrentData.startTime);
-      
+
       // Verify all operations completed (even if with auth failures)
       for (const result of results) {
         expect(result.status).toBe("fulfilled");
       }
     });
   });
-}); 
+});

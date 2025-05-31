@@ -4,8 +4,8 @@
  * Main registration point for all MCP features
  */
 
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logger } from "@core/logging";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { initializeConfluenceFeature } from "./confluence/index.js";
 
 /**

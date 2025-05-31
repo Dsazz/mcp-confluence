@@ -1,5 +1,5 @@
-import { BaseToolHandler } from "@core/tools/tool-handler.class";
 import { logger } from "@core/logging";
+import { BaseToolHandler } from "@core/tools/tool-handler.class";
 import type { SearchPagesResponse } from "../../api/index";
 import type { ConfluenceClient } from "../../api/index";
 import type { SearchPagesParams } from "../tools.types";
@@ -55,32 +55,50 @@ export class ConfluenceSearchPagesHandler extends BaseToolHandler<
     } catch (error) {
       // Provide better error messages for CQL syntax issues
       logger.debug("Search error details", { error, prefix: "CONFLUENCE" });
-      
+
       if (error instanceof Error) {
         const errorMessage = error.message.toLowerCase();
-        logger.debug("Error message analysis", { errorMessage, prefix: "CONFLUENCE" });
-        
+        logger.debug("Error message analysis", {
+          errorMessage,
+          prefix: "CONFLUENCE",
+        });
+
         // Handle HTTP 400 errors which are often CQL syntax issues
-        if (errorMessage.includes("400") || errorMessage.includes("bad request")) {
+        if (
+          errorMessage.includes("400") ||
+          errorMessage.includes("bad request")
+        ) {
           throw new Error(
-            `CQL syntax error in query: "${validatedParams.query}". Please use proper CQL syntax. Examples: text~"keyword", text~"phrase here", title~"page title", space.key="SPACE"`
+            `CQL syntax error in query: "${validatedParams.query}". Please use proper CQL syntax. Examples: text~"keyword", text~"phrase here", title~"page title", space.key="SPACE"`,
           );
         }
-        
+
         // Handle other API errors with context
-        if (errorMessage.includes("401") || errorMessage.includes("authentication")) {
-          throw new Error("Authentication failed. Please check your Confluence credentials.");
+        if (
+          errorMessage.includes("401") ||
+          errorMessage.includes("authentication")
+        ) {
+          throw new Error(
+            "Authentication failed. Please check your Confluence credentials.",
+          );
         }
-        
-        if (errorMessage.includes("403") || errorMessage.includes("access denied")) {
-          throw new Error("Access denied. You may not have permission to search in this space.");
+
+        if (
+          errorMessage.includes("403") ||
+          errorMessage.includes("access denied")
+        ) {
+          throw new Error(
+            "Access denied. You may not have permission to search in this space.",
+          );
         }
-        
+
         if (errorMessage.includes("404")) {
-          throw new Error("Confluence instance not found. Please check your host URL.");
+          throw new Error(
+            "Confluence instance not found. Please check your host URL.",
+          );
         }
       }
-      
+
       // Re-throw the original error if we can't provide a better message
       throw error;
     }
@@ -179,8 +197,8 @@ export class ConfluenceSearchPagesHandler extends BaseToolHandler<
     }
 
     // Generic CQL suggestions
-    suggestions.push("Use text~\"keyword\" for text search");
-    suggestions.push("Use space.key=\"SPACE\" to limit to a space");
+    suggestions.push('Use text~"keyword" for text search');
+    suggestions.push('Use space.key="SPACE" to limit to a space');
 
     return suggestions.slice(0, 3); // Limit to 3 suggestions
   }

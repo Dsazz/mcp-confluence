@@ -41,4 +41,4 @@ export interface ErrorMockFactory<T> extends MockFactory<T> {
   createPermissionError(action: string, resource: string): T;
   createValidationError(field: string, value: string): T;
   createServerError(message?: string): T;
-} 
+}

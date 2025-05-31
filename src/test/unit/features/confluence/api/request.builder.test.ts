@@ -1,5 +1,10 @@
-import { describe, test, expect } from "bun:test";
-import { buildSearchParams, buildGetPageParams, buildGetSpacesParams, buildGetCommentsParams } from "../../../../../features/confluence/api/request.builder";
+import { describe, expect, test } from "bun:test";
+import {
+  buildGetCommentsParams,
+  buildGetPageParams,
+  buildGetSpacesParams,
+  buildSearchParams,
+} from "../../../../../features/confluence/api/request.builder";
 
 describe("buildSearchParams", () => {
   describe("Basic Parameters", () => {
@@ -25,9 +30,9 @@ describe("buildSearchParams", () => {
     });
 
     test("should build search parameters with all options", () => {
-      const params = buildSearchParams("test search", { 
+      const params = buildSearchParams("test search", {
         limit: 10,
-        start: 50
+        start: 50,
       });
       expect(params).toHaveProperty("cql");
       expect(params).toHaveProperty("limit", 10);
@@ -51,9 +56,9 @@ describe("buildSearchParams", () => {
     });
 
     test("should handle undefined values", () => {
-      const params = buildSearchParams("test", { 
+      const params = buildSearchParams("test", {
         limit: undefined,
-        start: undefined
+        start: undefined,
       });
       expect(params).toHaveProperty("cql");
       expect(params).toHaveProperty("limit", 25);
@@ -75,33 +80,33 @@ describe("buildGetPageParams", () => {
     });
 
     test("should build page parameters with expand options", () => {
-      const params = buildGetPageParams({ 
-        expand: ["body.storage", "version"]
+      const params = buildGetPageParams({
+        expand: ["body.storage", "version"],
       });
       expect(params).toEqual({
         "body-format": "storage",
-        expand: "body.storage,version"
+        expand: "body.storage,version",
       });
     });
 
     test("should build page parameters with single expand option", () => {
-      const params = buildGetPageParams({ 
-        expand: ["body.storage"]
+      const params = buildGetPageParams({
+        expand: ["body.storage"],
       });
       expect(params).toEqual({
         "body-format": "storage",
-        expand: "body.storage"
+        expand: "body.storage",
       });
     });
 
     test("should build page parameters with all options", () => {
-      const params = buildGetPageParams({ 
+      const params = buildGetPageParams({
         includeContent: true,
-        expand: ["body.storage", "version", "space"]
+        expand: ["body.storage", "version", "space"],
       });
       expect(params).toEqual({
         "body-format": "storage",
-        expand: "body.storage,version,space"
+        expand: "body.storage,version,space",
       });
     });
   });
@@ -110,24 +115,24 @@ describe("buildGetPageParams", () => {
     test("should handle empty expand array", () => {
       const params = buildGetPageParams({ expand: [] });
       expect(params).toEqual({
-        "body-format": "storage"
+        "body-format": "storage",
       });
     });
 
     test("should handle undefined expand", () => {
       const params = buildGetPageParams({ expand: undefined });
       expect(params).toEqual({
-        "body-format": "storage"
+        "body-format": "storage",
       });
     });
 
     test("should handle expand with empty strings", () => {
-      const params = buildGetPageParams({ 
-        expand: ["body.storage", "", "version"]
+      const params = buildGetPageParams({
+        expand: ["body.storage", "", "version"],
       });
       expect(params).toEqual({
         "body-format": "storage",
-        expand: "body.storage,,version"
+        expand: "body.storage,,version",
       });
     });
   });
@@ -139,7 +144,7 @@ describe("buildGetSpacesParams", () => {
       const params = buildGetSpacesParams({});
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
@@ -147,7 +152,7 @@ describe("buildGetSpacesParams", () => {
       const params = buildGetSpacesParams({ limit: 50 });
       expect(params).toEqual({
         limit: 50,
-        start: 0
+        start: 0,
       });
     });
 
@@ -155,7 +160,7 @@ describe("buildGetSpacesParams", () => {
       const params = buildGetSpacesParams({ start: 100 });
       expect(params).toEqual({
         limit: 25,
-        start: 100
+        start: 100,
       });
     });
 
@@ -164,20 +169,20 @@ describe("buildGetSpacesParams", () => {
       expect(params).toEqual({
         limit: 25,
         start: 0,
-        type: "global"
+        type: "global",
       });
     });
 
     test("should build space parameters with all options", () => {
-      const params = buildGetSpacesParams({ 
+      const params = buildGetSpacesParams({
         limit: 10,
         start: 50,
-        type: "personal"
+        type: "personal",
       });
       expect(params).toEqual({
         limit: 10,
         start: 50,
-        type: "personal"
+        type: "personal",
       });
     });
   });
@@ -197,43 +202,43 @@ describe("buildGetSpacesParams", () => {
       const params = buildGetSpacesParams({ type: undefined });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
   });
 
   describe("Edge Cases", () => {
     test("should handle zero values", () => {
-      const params = buildGetSpacesParams({ 
+      const params = buildGetSpacesParams({
         limit: 0,
-        start: 0
+        start: 0,
       });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
     test("should handle large numbers", () => {
-      const params = buildGetSpacesParams({ 
+      const params = buildGetSpacesParams({
         limit: 1000,
-        start: 999999
+        start: 999999,
       });
       expect(params).toEqual({
         limit: 1000,
-        start: 999999
+        start: 999999,
       });
     });
 
     test("should handle undefined values", () => {
-      const params = buildGetSpacesParams({ 
+      const params = buildGetSpacesParams({
         limit: undefined,
         start: undefined,
-        type: undefined
+        type: undefined,
       });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
   });
@@ -245,18 +250,18 @@ describe("buildGetCommentsParams", () => {
       const params = buildGetCommentsParams({});
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
     test("should build comment parameters with custom pagination", () => {
-      const params = buildGetCommentsParams({ 
+      const params = buildGetCommentsParams({
         limit: 50,
-        start: 100
+        start: 100,
       });
       expect(params).toEqual({
         limit: 50,
-        start: 100
+        start: 100,
       });
     });
 
@@ -265,7 +270,7 @@ describe("buildGetCommentsParams", () => {
       expect(params).toEqual({
         limit: 25,
         start: 0,
-        sort: "created-date"
+        sort: "created-date",
       });
     });
 
@@ -274,20 +279,20 @@ describe("buildGetCommentsParams", () => {
       expect(params).toEqual({
         limit: 25,
         start: 0,
-        sort: "modified-date"
+        sort: "modified-date",
       });
     });
 
     test("should build comment parameters with all options", () => {
-      const params = buildGetCommentsParams({ 
+      const params = buildGetCommentsParams({
         limit: 10,
         start: 50,
-        orderBy: "created"
+        orderBy: "created",
       });
       expect(params).toEqual({
         limit: 10,
         start: 50,
-        sort: "created-date"
+        sort: "created-date",
       });
     });
   });
@@ -297,18 +302,18 @@ describe("buildGetCommentsParams", () => {
       const params = buildGetCommentsParams({ orderBy: undefined });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
 
     test("should handle zero values", () => {
-      const params = buildGetCommentsParams({ 
+      const params = buildGetCommentsParams({
         limit: 0,
-        start: 0
+        start: 0,
       });
       expect(params).toEqual({
         limit: 25,
-        start: 0
+        start: 0,
       });
     });
   });
@@ -330,7 +335,7 @@ describe("Parameter Building Consistency", () => {
 
   test("should handle custom pagination consistently", () => {
     const customOptions = { limit: 50, start: 100 };
-    
+
     const searchParams = buildSearchParams("test", customOptions);
     const spacesParams = buildGetSpacesParams(customOptions);
     const commentsParams = buildGetCommentsParams(customOptions);
@@ -342,4 +347,4 @@ describe("Parameter Building Consistency", () => {
     expect(commentsParams.limit).toBe(50);
     expect(commentsParams.start).toBe(100);
   });
-}); 
+});

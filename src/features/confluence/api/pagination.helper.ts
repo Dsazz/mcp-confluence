@@ -18,7 +18,9 @@ export interface PaginatedApiResponse {
  * @param response - API response with pagination data
  * @returns Standardized pagination info
  */
-export function createPaginationInfo(response: PaginatedApiResponse): PaginationInfo {
+export function createPaginationInfo(
+  response: PaginatedApiResponse,
+): PaginationInfo {
   return {
     limit: response.limit,
     start: response.start,
@@ -32,12 +34,14 @@ export function createPaginationInfo(response: PaginatedApiResponse): Pagination
  * @param options - Optional pagination options
  * @returns Standardized pagination parameters
  */
-export function createPaginationParams(options: {
-  limit?: number;
-  start?: number;
-} = {}): Record<string, string | number> {
+export function createPaginationParams(
+  options: {
+    limit?: number;
+    start?: number;
+  } = {},
+): Record<string, string | number> {
   return {
     limit: options.limit || 25,
     start: options.start || 0,
   };
-} 
+}

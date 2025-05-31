@@ -1,8 +1,13 @@
-import { describe, test, expect, beforeEach } from "bun:test";
-import { ConfluenceHttpClientFactory, createV1Client, createV2Client, createConfluenceHttpClient } from "../../../../../features/confluence/api/http-client.factory";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { ConfluenceConfig } from "../../../../../features/confluence/api/config.types";
 import { ConfluenceHttpClientV1 } from "../../../../../features/confluence/api/http-client-v1.impl";
 import { ConfluenceHttpClientV2 } from "../../../../../features/confluence/api/http-client-v2.impl";
+import {
+  ConfluenceHttpClientFactory,
+  createConfluenceHttpClient,
+  createV1Client,
+  createV2Client,
+} from "../../../../../features/confluence/api/http-client.factory";
 
 describe("ConfluenceHttpClientFactory", () => {
   let factory: ConfluenceHttpClientFactory;
@@ -12,7 +17,7 @@ describe("ConfluenceHttpClientFactory", () => {
     mockConfig = new ConfluenceConfig(
       "https://test.atlassian.net",
       "test-api-token",
-      "test@example.com"
+      "test@example.com",
     );
     factory = new ConfluenceHttpClientFactory(mockConfig);
   });
@@ -104,7 +109,7 @@ describe("Convenience Functions", () => {
     mockConfig = new ConfluenceConfig(
       "https://test.atlassian.net",
       "test-api-token",
-      "test@example.com"
+      "test@example.com",
     );
   });
 
@@ -136,24 +141,34 @@ describe("Convenience Functions", () => {
 
   describe("createConfluenceHttpClient", () => {
     test("should create v1 client when requested", () => {
-      const client = createConfluenceHttpClient(mockConfig, { apiVersion: "v1" });
+      const client = createConfluenceHttpClient(mockConfig, {
+        apiVersion: "v1",
+      });
       expect(client).toBeInstanceOf(ConfluenceHttpClientV1);
     });
 
     test("should create v2 client when requested", () => {
-      const client = createConfluenceHttpClient(mockConfig, { apiVersion: "v2" });
+      const client = createConfluenceHttpClient(mockConfig, {
+        apiVersion: "v2",
+      });
       expect(client).toBeInstanceOf(ConfluenceHttpClientV2);
     });
 
     test("should throw error for unsupported API version", () => {
       expect(() => {
-        createConfluenceHttpClient(mockConfig, { apiVersion: "v3" as "v1" | "v2" });
+        createConfluenceHttpClient(mockConfig, {
+          apiVersion: "v3" as "v1" | "v2",
+        });
       }).toThrow("Unsupported API version: v3");
     });
 
     test("should use factory internally", () => {
-      const client1 = createConfluenceHttpClient(mockConfig, { apiVersion: "v1" });
-      const client2 = createConfluenceHttpClient(mockConfig, { apiVersion: "v1" });
+      const client1 = createConfluenceHttpClient(mockConfig, {
+        apiVersion: "v1",
+      });
+      const client2 = createConfluenceHttpClient(mockConfig, {
+        apiVersion: "v1",
+      });
       expect(client1).not.toBe(client2);
       expect(client1).toBeInstanceOf(ConfluenceHttpClientV1);
       expect(client2).toBeInstanceOf(ConfluenceHttpClientV1);
@@ -163,8 +178,16 @@ describe("Convenience Functions", () => {
 
 describe("Factory Pattern Validation", () => {
   test("should maintain proper dependency injection pattern", () => {
-    const config1 = new ConfluenceConfig("https://test1.com", "token1", "user1@test.com");
-    const config2 = new ConfluenceConfig("https://test2.com", "token2", "user2@test.com");
+    const config1 = new ConfluenceConfig(
+      "https://test1.com",
+      "token1",
+      "user1@test.com",
+    );
+    const config2 = new ConfluenceConfig(
+      "https://test2.com",
+      "token2",
+      "user2@test.com",
+    );
 
     const factory1 = new ConfluenceHttpClientFactory(config1);
     const factory2 = new ConfluenceHttpClientFactory(config2);
@@ -175,14 +198,18 @@ describe("Factory Pattern Validation", () => {
   });
 
   test("should not maintain global state", () => {
-    const config = new ConfluenceConfig("https://test.com", "token", "user@test.com");
-    
+    const config = new ConfluenceConfig(
+      "https://test.com",
+      "token",
+      "user@test.com",
+    );
+
     const factory1 = new ConfluenceHttpClientFactory(config);
     const factory2 = new ConfluenceHttpClientFactory(config);
 
     // Different factory instances
     expect(factory1).not.toBe(factory2);
-    
+
     // But same config reference
     expect(factory1.getConfig()).toBe(factory2.getConfig());
   });

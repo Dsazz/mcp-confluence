@@ -1,13 +1,13 @@
 import { BaseToolHandler } from "@core/tools/tool-handler.class";
 import type {
+  BasicSpaceInfo,
   GetPageResponse,
   Page,
-  BasicSpaceInfo,
   PageBreadcrumb,
 } from "../../api/index";
 import type { ConfluenceClient } from "../../api/index";
-import type { GetPageParams } from "../tools.types";
 import { formatPageResponse } from "../../formatters/index";
+import type { GetPageParams } from "../tools.types";
 
 export class ConfluenceGetPageHandler extends BaseToolHandler<
   GetPageParams,

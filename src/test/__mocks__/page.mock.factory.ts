@@ -1,5 +1,8 @@
 import type { Page } from "../../features/confluence/api/models.types";
-import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
+import type {
+  BuildableMockFactory,
+  MockBuilder,
+} from "./mock-factory.interfaces";
 
 // Page Mock Builder Implementation
 export class PageMockBuilder implements MockBuilder<Page> {
@@ -56,7 +59,7 @@ export class PageMockFactory implements BuildableMockFactory<Page> {
   create(overrides: Partial<Page> = {}): Page {
     const id = overrides.id || this.generateId();
     const title = overrides.title || this.generateTitle();
-    
+
     return {
       ...this.defaults,
       ...overrides,
@@ -78,7 +81,7 @@ export class PageMockFactory implements BuildableMockFactory<Page> {
         ...overrides,
         id: `page-${index + 1}`,
         title: `${overrides.title || "Test Page"} ${index + 1}`,
-      })
+      }),
     );
   }
 
@@ -143,4 +146,4 @@ export class PageMockFactory implements BuildableMockFactory<Page> {
               <li>Improve code review process</li>
             </ul>`;
   }
-} 
+}

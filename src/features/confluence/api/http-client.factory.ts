@@ -1,7 +1,10 @@
 import type { ConfluenceConfig } from "./config.types";
-import type { IConfluenceHttpClient, HttpClientOptions } from "./http-client.abstract.base";
 import { ConfluenceHttpClientV1 } from "./http-client-v1.impl";
 import { ConfluenceHttpClientV2 } from "./http-client-v2.impl";
+import type {
+  HttpClientOptions,
+  IConfluenceHttpClient,
+} from "./http-client.abstract.base";
 
 /**
  * Factory for creating Confluence HTTP clients
@@ -67,7 +70,9 @@ export class ConfluenceHttpClientFactory {
  * @param config - Confluence configuration
  * @returns v1 HTTP client instance
  */
-export function createV1Client(config: ConfluenceConfig): ConfluenceHttpClientV1 {
+export function createV1Client(
+  config: ConfluenceConfig,
+): ConfluenceHttpClientV1 {
   return new ConfluenceHttpClientV1(config);
 }
 
@@ -76,7 +81,9 @@ export function createV1Client(config: ConfluenceConfig): ConfluenceHttpClientV1
  * @param config - Confluence configuration
  * @returns v2 HTTP client instance
  */
-export function createV2Client(config: ConfluenceConfig): ConfluenceHttpClientV2 {
+export function createV2Client(
+  config: ConfluenceConfig,
+): ConfluenceHttpClientV2 {
   return new ConfluenceHttpClientV2(config);
 }
 
@@ -88,8 +95,8 @@ export function createV2Client(config: ConfluenceConfig): ConfluenceHttpClientV2
  */
 export function createConfluenceHttpClient(
   config: ConfluenceConfig,
-  options: HttpClientOptions
+  options: HttpClientOptions,
 ): IConfluenceHttpClient {
   const factory = new ConfluenceHttpClientFactory(config);
   return factory.createClient(options);
-} 
+}

@@ -1,8 +1,5 @@
 import { BaseToolHandler } from "@core/tools/tool-handler.class";
-import type {
-  ConfluenceClient,
-  GetSpacesResponse,
-} from "../../api/index";
+import type { ConfluenceClient, GetSpacesResponse } from "../../api/index";
 import type { GetSpacesParams } from "../tools.types";
 
 export class ConfluenceGetSpacesHandler extends BaseToolHandler<

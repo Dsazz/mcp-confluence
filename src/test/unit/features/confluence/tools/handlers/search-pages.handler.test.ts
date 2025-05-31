@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { SearchPagesResponse } from "@features/confluence/api/responses.types";
 import type { ConfluenceClient } from "@features/confluence/api/index";
-import type { SearchPagesParams } from "@features/confluence/tools/tools.types";
+import type { SearchPagesResponse } from "@features/confluence/api/responses.types";
 import { ConfluenceSearchPagesHandler } from "@features/confluence/tools/handlers/search-pages.handler";
+import type { SearchPagesParams } from "@features/confluence/tools/tools.types";
 import { mockRegistry } from "../../../../../__mocks__/index";
 
 describe("ConfluenceSearchPagesHandler", () => {
@@ -393,7 +393,9 @@ describe("ConfluenceSearchPagesHandler", () => {
   describe("Error Handling", () => {
     test("should handle API errors gracefully", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("Search service unavailable")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("Search service unavailable")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
@@ -404,7 +406,9 @@ describe("ConfluenceSearchPagesHandler", () => {
 
     test("should handle network errors", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("Network timeout")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("Network timeout")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
@@ -415,47 +419,63 @@ describe("ConfluenceSearchPagesHandler", () => {
 
     test("should provide better error message for HTTP 400 errors", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("HTTP 400: Bad Request")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("HTTP 400: Bad Request")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
-      const response = await handler.handle({ query: "Partner Hub" });
+      const response = await handler.handle({ query: "Test Hub" });
       expect(response.success).toBe(false);
-      expect(response.error).toContain('CQL syntax error in query: "Partner Hub"');
+      expect(response.error).toContain(
+        'CQL syntax error in query: "Test Hub"',
+      );
       expect(response.error).toContain("Please use proper CQL syntax");
     });
 
     test("should provide better error message for authentication errors", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("HTTP 401: Authentication failed")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("HTTP 401: Authentication failed")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
       const response = await handler.handle({ query: "test query" });
       expect(response.success).toBe(false);
-      expect(response.error).toContain("Authentication failed. Please check your Confluence credentials.");
+      expect(response.error).toContain(
+        "Authentication failed. Please check your Confluence credentials.",
+      );
     });
 
     test("should provide better error message for access denied errors", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("HTTP 403: Access denied")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("HTTP 403: Access denied")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
       const response = await handler.handle({ query: "test query" });
       expect(response.success).toBe(false);
-      expect(response.error).toContain("Access denied. You may not have permission to search in this space.");
+      expect(response.error).toContain(
+        "Access denied. You may not have permission to search in this space.",
+      );
     });
 
     test("should provide better error message for not found errors", async () => {
       const mockClient = mockConfluenceClient;
-      mockClient.searchPages = mock(() => Promise.reject(new Error("HTTP 404: Not found")));
+      mockClient.searchPages = mock(() =>
+        Promise.reject(new Error("HTTP 404: Not found")),
+      );
 
       const handler = new ConfluenceSearchPagesHandler(mockClient);
 
       const response = await handler.handle({ query: "test query" });
       expect(response.success).toBe(false);
-      expect(response.error).toContain("Confluence instance not found. Please check your host URL.");
+      expect(response.error).toContain(
+        "Confluence instance not found. Please check your host URL.",
+      );
     });
   });
 
@@ -543,9 +563,11 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s: string) => s.includes("Use text~\"keyword\" for text search"))).toBe(
-        true,
-      );
+      expect(
+        data.suggestions?.some((s: string) =>
+          s.includes('Use text~"keyword" for text search'),
+        ),
+      ).toBe(true);
     });
 
     test("should suggest wildcard search for non-wildcard queries", async () => {
@@ -564,9 +586,9 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s: string) => s.includes("text~\"search\""))).toBe(
-        true,
-      );
+      expect(
+        data.suggestions?.some((s: string) => s.includes('text~"search"')),
+      ).toBe(true);
     });
 
     test("should suggest fewer keywords for multi-word queries", async () => {
@@ -587,9 +609,11 @@ describe("ConfluenceSearchPagesHandler", () => {
       expect(response.success).toBe(true);
       const data = response.data as SearchPagesResponse;
       expect(data.suggestions).toBeDefined();
-      expect(data.suggestions?.some((s: string) => s.includes("title~\"very long search query with many words\""))).toBe(
-        true,
-      );
+      expect(
+        data.suggestions?.some((s: string) =>
+          s.includes('title~"very long search query with many words"'),
+        ),
+      ).toBe(true);
     });
 
     test("should limit suggestions to 3 items", async () => {

@@ -1,5 +1,8 @@
 import type { Space } from "@features/confluence/api/models.types";
-import type { BuildableMockFactory, MockBuilder } from "./mock-factory.interfaces";
+import type {
+  BuildableMockFactory,
+  MockBuilder,
+} from "./mock-factory.interfaces";
 
 // Space Mock Builder Implementation
 export class SpaceMockBuilder implements MockBuilder<Space> {
@@ -17,7 +20,10 @@ export class SpaceMockBuilder implements MockBuilder<Space> {
     return this;
   }
 
-  withRelated<R>(_relation: string, _factory: { create(): R }): SpaceMockBuilder {
+  withRelated<R>(
+    _relation: string,
+    _factory: { create(): R },
+  ): SpaceMockBuilder {
     // Spaces don't typically have related entities in our current model
     return this;
   }
@@ -48,7 +54,7 @@ export class SpaceMockFactory implements BuildableMockFactory<Space> {
     const id = overrides.id || this.generateId();
     const key = overrides.key || this.generateKey();
     const name = overrides.name || this.generateName();
-    
+
     return {
       ...this.defaults,
       ...overrides,
@@ -77,7 +83,7 @@ export class SpaceMockFactory implements BuildableMockFactory<Space> {
         id: `space-${index + 1}`,
         key: `${overrides.key || "TEST"}${index + 1}`,
         name: `${overrides.name || "Test Space"} ${index + 1}`,
-      })
+      }),
     );
   }
 
@@ -167,4 +173,4 @@ export class SpaceMockFactory implements BuildableMockFactory<Space> {
   private generateRealisticDescription(): string {
     return "Collaborative workspace for the engineering team to share documentation, project updates, and technical specifications.";
   }
-} 
+}

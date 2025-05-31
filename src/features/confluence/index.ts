@@ -1,8 +1,8 @@
+import { logger } from "@core/logging";
 /**
  * Confluence integration for MCP
  */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { logger } from "@core/logging";
 import { registerTools } from "./register-tools";
 
 /**
@@ -14,7 +14,9 @@ export function initializeConfluenceFeature(server: McpServer): void {
     // Register all tools with the MCP server
     registerTools(server);
 
-    logger.info("Confluence feature initialized successfully", { prefix: "CONFLUENCE" });
+    logger.info("Confluence feature initialized successfully", {
+      prefix: "CONFLUENCE",
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(`Failed to initialize Confluence feature: ${errorMessage}`, {

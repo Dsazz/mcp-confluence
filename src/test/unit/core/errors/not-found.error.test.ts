@@ -1,6 +1,6 @@
-import { describe, test, expect } from "bun:test";
-import { NotFoundError } from "../../../../core/errors/not-found.error";
+import { describe, expect, test } from "bun:test";
 import { McpError } from "../../../../core/errors/mcp.error";
+import { NotFoundError } from "../../../../core/errors/not-found.error";
 
 describe("NotFoundError", () => {
   describe("constructor", () => {
@@ -113,18 +113,18 @@ describe("NotFoundError", () => {
     });
 
     test("should be JSON.stringify compatible", () => {
-      const context = { 
-        resourceType: "space", 
+      const context = {
+        resourceType: "space",
         spaceKey: "MISSING",
-        searchLocation: "/api/confluence/spaces" 
+        searchLocation: "/api/confluence/spaces",
       };
       const error = new NotFoundError("Space not found", context);
-      
+
       expect(() => JSON.stringify(error.toJSON())).not.toThrow();
-      
+
       const serialized = JSON.stringify(error.toJSON());
       const parsed = JSON.parse(serialized);
-      
+
       expect(parsed.name).toBe("NotFoundError");
       expect(parsed.code).toBe("NOT_FOUND_ERROR");
       expect(parsed.context).toEqual(context);
@@ -243,7 +243,8 @@ describe("NotFoundError", () => {
     });
 
     test("should handle special characters in message", () => {
-      const specialMessage = "Resource not found: 🚨 Missing item with\nnewlines";
+      const specialMessage =
+        "Resource not found: 🚨 Missing item with\nnewlines";
       const error = new NotFoundError(specialMessage);
       expect(error.message).toBe(specialMessage);
     });
@@ -256,14 +257,14 @@ describe("NotFoundError", () => {
     });
 
     test("should handle undefined resource identifiers", () => {
-      const context = { 
-        resourceId: undefined, 
+      const context = {
+        resourceId: undefined,
         resourceType: "unknown",
-        searchAttempted: true 
+        searchAttempted: true,
       };
       const error = new NotFoundError("Unknown resource", context);
       expect(error.context?.resourceType).toBe("unknown");
       expect(error.context?.searchAttempted).toBe(true);
     });
   });
-}); 
+});

@@ -1,6 +1,6 @@
 import type {
-  ConfluenceConfig,
   ConfluenceAuthHeaders,
+  ConfluenceConfig,
   ConfluenceRequestConfig,
 } from "./config.types";
 
@@ -64,7 +64,9 @@ export class ConfluenceApiError extends Error {
  * Base abstract class for Confluence HTTP clients
  * Provides common functionality for authentication and error handling
  */
-export abstract class BaseConfluenceHttpClient implements IConfluenceHttpClient {
+export abstract class BaseConfluenceHttpClient
+  implements IConfluenceHttpClient
+{
   protected readonly config: ConfluenceConfig;
   protected readonly headers: ConfluenceAuthHeaders;
 
@@ -168,4 +170,4 @@ export abstract class BaseConfluenceHttpClient implements IConfluenceHttpClient 
     // Check if the URL already ends with /wiki to prevent duplication
     return baseUrl.endsWith("/wiki") ? baseUrl : `${baseUrl}/wiki`;
   }
-} 
+}

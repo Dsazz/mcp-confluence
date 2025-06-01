@@ -5,6 +5,45 @@ All notable changes to the Confluence MCP Server will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-06-01
+
+### Changed
+
+- **Package Size Optimization** (Level 1 Enhancement)
+
+  - Moved `@modelcontextprotocol/inspector` from production dependencies to devDependencies
+  - Reduces NPM package size by excluding development-only inspection tools
+  - Inspector only used in development scripts (`bun run inspect`), not required for runtime
+  - Maintains full backward compatibility with no breaking changes
+
+### Technical Details
+
+#### Dependency Optimization
+
+**Production Dependencies** (Only runtime-required packages):
+
+- `@modelcontextprotocol/sdk`: Core MCP functionality
+- `dotenv`: Environment variable loading
+- `zod`: Schema validation
+
+**Development Dependencies** (Moved from production):
+
+- `@modelcontextprotocol/inspector`: Development inspection tool
+
+#### Benefits
+
+- **Smaller Install Size**: Reduced production bundle size for end users
+- **Faster Installation**: Fewer packages to download in production environments
+- **Cleaner Dependencies**: Clear separation between runtime and development tools
+- **Maintained Functionality**: All features work identically, no breaking changes
+
+#### Quality Verification
+
+- **Build Process**: All builds pass successfully (`bun run build`)
+- **Type Safety**: TypeScript compilation successful (`bun run typecheck`)
+- **Distribution**: Generated `dist/index.js` verified and functional
+- **Development Tools**: Inspector still available via `bun run inspect` for development
+
 ## [0.2.0] - 2025-05-31
 
 ### Changed

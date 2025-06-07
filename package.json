@@ -1,6 +1,6 @@
 {
   "name": "@dsazz/mcp-confluence",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A powerful Model Context Protocol (MCP) server for Atlassian Confluence integration. Access Confluence spaces, search pages, and manage content directly from any MCP-compatible editor or application.",
   "type": "module",
   "main": "dist/index.js",

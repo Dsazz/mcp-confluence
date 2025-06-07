@@ -5,6 +5,18 @@ All notable changes to the Confluence MCP Server will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-06-07
+
+### Changed
+
+- **Documentation Update**
+  - Updated README.md to reflect v0.3.0 architectural changes
+  - Documented 9 strategic MCP tools with enhanced workflow capabilities
+  - Updated tool examples for renamed `confluence_search` (was `confluence_search_pages`)
+  - Added v0.3.0 feature highlights and domain-based architecture documentation
+  - Removed deprecated task creation tool documentation
+  - Enhanced project structure documentation with new domain organization
+
 ## [0.3.0] - 2025-06-07
 
 ### Changed

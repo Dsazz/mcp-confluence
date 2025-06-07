@@ -18,22 +18,33 @@
 
 ## ✨ Features
 
-- 📚 **Access Confluence Directly From Cursor**
+### 🚀 New in v0.3.0 - Optimized Architecture
 
-  - Browse your Confluence spaces without leaving your IDE
-  - Get detailed page information with formatted content
-  - Convert Confluence pages into actionable local tasks
+- **9 Strategic MCP Tools** - Optimized from 8 tools with enhanced workflow capabilities
+- **Domain-Based Architecture** - Clean separation into 3 domains: Spaces, Pages, and Search
+- **Enhanced Navigation** - New tools for space lookup, page hierarchy, and content discovery
+- **Improved Performance** - 1871 tests passing with optimized build process
 
-- 🔍 **Powerful Search Capabilities**
+### 📚 **Access Confluence Directly From Your Editor**
 
-  - Search pages using text queries or advanced CQL (Confluence Query Language)
-  - Support for space filtering, content type filtering, and result ordering
-  - Rich markdown formatting with page previews and direct links
+- Browse your Confluence spaces without leaving your IDE
+- Get detailed page information with formatted content
+- Navigate page hierarchies with child page discovery
+- Create, update, and manage Confluence content directly
 
-- 📝 **Smart Content Processing**
-  - Automatic conversion of Confluence's storage format to readable markdown
-  - Support for formatted text, tables, macros, and attachments
-  - Intelligent task extraction from page content
+### 🔍 **Powerful Search Capabilities**
+
+- Search pages using text queries or advanced CQL (Confluence Query Language)
+- Support for space filtering, content type filtering, and result ordering
+- Rich markdown formatting with page previews and direct links
+- Renamed `confluence_search_pages` to `confluence_search` for simplicity
+
+### 📝 **Smart Content Processing**
+
+- Automatic conversion of Confluence's storage format to readable markdown
+- Support for formatted text, tables, macros, and attachments
+- Full CRUD operations for page management
+- Strategic workflow tools for better user experience
 
 ## 🚀 Quick Start
 
@@ -235,14 +246,19 @@ For more details, see the [MCP Inspector GitHub repository](https://github.com/m
 
 ## 🧰 Available Tools
 
-### Confluence Tools
+### 🌟 Strategic Workflow Tools
 
-| Tool                      | Description                                                 | Parameters                         | Returns                           |
-| ------------------------- | ----------------------------------------------------------- | ---------------------------------- | --------------------------------- |
-| `confluence_get_spaces`   | List accessible Confluence spaces with optional filtering   | See space parameters below         | Markdown-formatted list of spaces |
-| `confluence_get_page`     | Get detailed information about a specific page with content | `pageId`, optional content flags   | Markdown-formatted page details   |
-| `confluence_search_pages` | Search pages using text queries or CQL                      | See search parameters below        | Markdown-formatted search results |
-| `confluence_create_task`  | Create a local task from Confluence page content            | `pageId`, optional task properties | Markdown-formatted task           |
+| Tool                            | Description                                                        | Parameters                        | Returns                           |
+| ------------------------------- | ------------------------------------------------------------------ | --------------------------------- | --------------------------------- |
+| `confluence_get_spaces`         | List accessible Confluence spaces with optional filtering          | See space parameters below        | Markdown-formatted list of spaces |
+| `confluence_get_space_by_key`   | Get specific space information by space key                        | `spaceKey`, optional expand flags | Markdown-formatted space details  |
+| `confluence_get_pages_by_space` | Get all pages within a specific space                              | `spaceId`, optional pagination    | Markdown-formatted page list      |
+| `confluence_get_page`           | Get detailed information about a specific page with content        | `pageId`, optional content flags  | Markdown-formatted page details   |
+| `confluence_get_child_pages`    | Get child pages of a specific page for hierarchy navigation        | `pageId`, optional pagination     | Markdown-formatted child pages    |
+| `confluence_search`             | Search pages using text queries or CQL (renamed from search_pages) | See search parameters below       | Markdown-formatted search results |
+| `confluence_create_page`        | Create a new page in Confluence                                    | See page creation parameters      | Markdown-formatted page details   |
+| `confluence_update_page`        | Update an existing page in Confluence                              | See page update parameters        | Markdown-formatted page details   |
+| `confluence_delete_page`        | Delete a page from Confluence                                      | `pageId`                          | Confirmation message              |
 
 #### Space Parameters
 
@@ -296,7 +312,7 @@ confluence_get_page 12345 includeComments:true expand:"version,space"
 
 #### Search Parameters
 
-The `confluence_search_pages` tool supports both simple and advanced search:
+The `confluence_search` tool supports both simple and advanced search:
 
 **Basic Search**:
 
@@ -319,82 +335,107 @@ The `confluence_search_pages` tool supports both simple and advanced search:
 
 ```
 # Simple text search
-confluence_search_pages query:"project documentation"
+confluence_search query:"project documentation"
 
 # Search in specific space
-confluence_search_pages query:"API guide" spaceKey:"DEV"
+confluence_search query:"API guide" spaceKey:"DEV"
 
 # Advanced CQL search
-confluence_search_pages query:'text~"user guide" AND type=page'
+confluence_search query:'text~"user guide" AND type=page'
 
 # Search with custom ordering
-confluence_search_pages query:"meeting notes" orderBy:"modified" limit:10
+confluence_search query:"meeting notes" orderBy:"modified" limit:10
 ```
 
-#### Task Creation Parameters
+#### Page Management Parameters
 
-The `confluence_create_task` tool supports these parameters:
+**Page Creation** (`confluence_create_page`):
 
-**Required**:
+- `spaceId`: String - The ID of the space where the page will be created
+- `title`: String - The title of the new page
+- `content`: String - The content of the page (supports Confluence storage format)
+- `parentPageId`: String (optional) - The ID of the parent page
+- `status`: String (`"current"` or `"draft"`, default: `"current"`) - Page status
 
-- `pageId`: String - The ID of the page to create a task from
+**Page Update** (`confluence_update_page`):
 
-**Customization Options**:
-
-- `taskName`: String (optional) - Custom task name (auto-generated from page title if not provided)
-- `description`: String (optional) - Custom task description (auto-generated from page content if not provided)
-- `priority`: String (`"low"`, `"medium"`, `"high"`, default: `"medium"`) - Task priority level
-- `dueDate`: String (optional) - Due date in ISO format (YYYY-MM-DD)
-- `tags`: Array of strings (optional) - Custom tags (auto-generated from page labels if not provided)
+- `pageId`: String - The ID of the page to update
+- `title`: String (optional) - New title for the page
+- `content`: String (optional) - New content for the page
+- `versionNumber`: Number - Current version number of the page
+- `versionMessage`: String (optional) - Message describing the changes
 
 **Examples**:
 
 ```
-# Basic task creation
-confluence_create_task 12345
+# Create a new page
+confluence_create_page spaceId:"123456" title:"New Documentation" content:"<p>Initial content</p>"
 
-# Custom task with priority
-confluence_create_task 12345 taskName:"Review API documentation" priority:"high"
+# Update an existing page
+confluence_update_page pageId:"789012" title:"Updated Title" content:"<p>Updated content</p>" versionNumber:2
 
-# Task with due date and tags
-confluence_create_task 12345 dueDate:"2024-12-31" tags:["documentation", "review"]
+# Get child pages for navigation
+confluence_get_child_pages pageId:"123456" limit:10
 ```
 
-## 📁 Project Structure
+## 📁 Project Structure (v0.3.0 - Optimized Architecture)
 
 ```
  src/
-  ├── core/          # Core functionality and configurations
-  │   ├── errors/         # Error handling utilities
-  │   ├── logging/        # Logging infrastructure
-  │   ├── responses/      # Response formatting
-  │   ├── server/         # MCP server setup
-  │   ├── tools/          # Base tool patterns
-  │   └── utils/          # General utilities
-  ├── features/      # Feature implementations
-  │   └── confluence/     # Confluence integration
-  │       ├── api/         # Confluence API client
-  │       │   ├── client.impl.ts           # Main client orchestrator
-  │       │   ├── http-client.factory.ts   # Client factory (V1 + V2)
-  │       │   ├── http-client-v1.impl.ts   # V1 API client (search)
-  │       │   ├── http-client-v2.impl.ts   # V2 API client (CRUD)
-  │       │   ├── operation.router.ts      # Smart operation routing
-  │       │   └── ...                      # Models, types, utilities
-  │       ├── formatters/  # Response formatters
-  │       ├── tools/       # MCP tool implementations
-  │       │   ├── handlers/   # Tool handlers
-  │       │   │   ├── get-spaces.handler.ts
-  │       │   │   ├── get-page.handler.ts
-  │       │   │   ├── search-pages.handler.ts
-  │       │   │   ├── create-page.handler.ts
-  │       │   │   └── update-page.handler.ts
-  │       │   ├── tools.factory.ts     # Tool factory
-  │       │   └── tools.schemas.ts     # Tool schemas
-  │       └── formatters/  # Response formatters
-  └── test/          # Test suite
-      ├── integration/     # Integration tests
-      ├── unit/           # Unit tests
-      └── utils/          # Test utilities
+  ├── core/                    # Core functionality and configurations
+  │   ├── errors/              # Error handling utilities
+  │   ├── logging/             # Logging infrastructure
+  │   ├── responses/           # Response formatting
+  │   ├── server/              # MCP server setup
+  │   ├── tools/               # Base tool patterns
+  │   └── utils/               # General utilities
+  ├── features/                # Feature implementations
+  │   └── confluence/          # Confluence integration
+  │       ├── client/          # HTTP client infrastructure
+  │       │   ├── config/      # Client configuration
+  │       │   ├── errors/      # Client-specific errors
+  │       │   ├── http/        # HTTP client implementations
+  │       │   │   ├── utils/   # HTTP utilities
+  │       │   │   ├── v1/      # V1 API client (search)
+  │       │   │   └── v2/      # V2 API client (CRUD)
+  │       │   └── responses/   # Response models
+  │       ├── domains/         # Domain-based architecture (NEW)
+  │       │   ├── spaces/      # Space management domain
+  │       │   │   ├── handlers/     # Space operation handlers
+  │       │   │   ├── models/       # Space data models
+  │       │   │   ├── use-cases/    # Space business logic
+  │       │   │   ├── validators/   # Space validation
+  │       │   │   └── formatters/   # Space response formatting
+  │       │   ├── pages/       # Page management domain
+  │       │   │   ├── handlers/     # Page operation handlers
+  │       │   │   ├── models/       # Page data models
+  │       │   │   ├── use-cases/    # Page business logic
+  │       │   │   ├── validators/   # Page validation
+  │       │   │   └── formatters/   # Page response formatting
+  │       │   └── search/      # Search domain
+  │       │       ├── handlers/     # Search operation handlers
+  │       │       ├── models/       # Search data models
+  │       │       ├── use-cases/    # Search business logic
+  │       │       ├── validators/   # Search validation
+  │       │       └── formatters/   # Search response formatting
+  │       ├── shared/          # Shared utilities across domains
+  │       │   ├── formatters/  # Common formatters
+  │       │   └── validators/  # Common validators
+  │       └── tools/           # MCP tool orchestration
+  │           ├── handlers.ts  # Unified tool handlers
+  │           ├── mcp.ts       # MCP tool definitions
+  │           └── routing.ts   # Tool routing logic
+  └── test/                    # Test suite (1871 tests)
+      ├── integration/         # Integration tests
+      ├── unit/               # Unit tests (domain-organized)
+      │   ├── core/           # Core functionality tests
+      │   └── features/       # Feature tests (by domain)
+      │       └── confluence/
+      │           └── domains/ # Domain-specific tests
+      │               ├── spaces/   # Space domain tests
+      │               ├── pages/    # Page domain tests
+      │               └── search/   # Search domain tests
+      └── utils/              # Test utilities
 ```
 
 ### Architecture Overview

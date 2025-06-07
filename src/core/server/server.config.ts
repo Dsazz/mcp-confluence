@@ -1,12 +1,12 @@
 /**
  * Server Configuration
  *
- * MCP Server configuration settings
+ * Configuration settings for the MCP server
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { z } from "zod";
 import { logger } from "../logging";
+import { z } from "zod";
 
 /**
  * Zod schema for server configuration

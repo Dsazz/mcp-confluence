@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
+    "noImplicitAny": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
@@ -20,9 +21,29 @@
     "rootDir": "src",
     "paths": {
       "@core/*": ["src/core/*"],
-      "@features/*": ["src/features/*"]
-    }
+      "@features/*": ["src/features/*"],
+      "@test/*": ["src/test/*"],
+      "@confluence/*": ["src/features/confluence/*"],
+      "@confluence/spaces": ["src/features/confluence/domains/spaces"],
+      "@confluence/pages": ["src/features/confluence/domains/pages"],
+      "@confluence/search": ["src/features/confluence/domains/search"],
+      "@confluence/content": ["src/features/confluence/domains/content"],
+      "@confluence/shared": ["src/features/confluence/shared"],
+      "@confluence/client": ["src/features/confluence/client"],
+      "@confluence/tools": ["src/features/confluence/tools"]
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": [
+    "src/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage"
+  ]
 }

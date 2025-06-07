@@ -5,6 +5,71 @@ All notable changes to the Confluence MCP Server will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-06-07
+
+### Changed
+
+- **MCP Tools Enhancement**
+
+  - **Added Strategic Tools**: `confluence_get_space_by_key`, `confluence_get_space_by_id`, `confluence_get_pages_by_space`, `confluence_get_child_pages`
+  - **Removed Redundant Tools**: `confluence_get_content`, `confluence_create_content`, `confluence_update_content`
+  - **Renamed for Clarity**: `confluence_search_pages` → `confluence_search`
+  - **Removed Low-Value Handlers**: 9 analytics/validation handlers completely removed
+
+- **Code Quality Improvements**
+
+  - Enhanced error handling and validation
+  - Improved build and distribution setup
+  - Updated PageContextBuilder to use real child page data
+  - Cleaner separation of concerns between MCP and internal handlers
+
+### Technical Details
+
+#### MCP Tools Optimization
+
+**Final Tool Registry (9 tools)**:
+
+**Spaces Domain (3 tools)**:
+
+- `confluence_get_spaces` - List accessible spaces
+- `confluence_get_space_by_key` - Get space by key
+- `confluence_get_space_by_id` - Get space by ID
+
+**Pages Domain (5 tools)**:
+
+- `confluence_get_page` - Get page details
+- `confluence_create_page` - Create new page
+- `confluence_update_page` - Update existing page
+- `confluence_get_pages_by_space` - List pages in space
+- `confluence_get_child_pages` - Get child pages
+
+**Search Domain (1 tool)**:
+
+- `confluence_search` - Unified search functionality
+
+#### Architecture Benefits
+
+- **Context Reduction**: Removed entire content domain
+- **Strategic Enhancement**: Added valuable workflow tools
+- **Conflict Resolution**: Fixed naming conflicts
+- **Code Quality**: 33% reduction in handler files
+- **Functionality**: Enhanced with real child page data
+- **Maintainability**: Cleaner domain separation
+
+#### Quality Verification
+
+- **Build Process**: All builds pass successfully (`bun run build`)
+- **Type Safety**: TypeScript compilation successful (`bun run typecheck`)
+- **Test Coverage**: 1871 tests passing, 0 failures
+- **Code Quality**: Zero linting errors with Biome
+- **Distribution**: Optimized package structure maintained
+
+### Breaking Changes
+
+- Removed `confluence_get_content`, `confluence_create_content`, `confluence_update_content` tools (use page equivalents)
+- Renamed `confluence_search_pages` to `confluence_search`
+- Internal handler structure reorganized (does not affect MCP tool usage)
+
 ## [0.2.1] - 2025-06-01
 
 ### Changed

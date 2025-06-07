@@ -41,3 +41,5 @@ coverage/
 .specstory/
 memory-bank/
 docs/
+
+test-results*

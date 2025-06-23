@@ -58,14 +58,16 @@ export class PageRepositoryImpl implements PageRepository {
 
   async findByTitle(spaceId: string, title: PageTitle): Promise<Page | null> {
     try {
-      // Search for pages with the exact title in the specified space
+      // Use CQL search to find pages by title in a specific space
+      // This is more reliable with the v1 API
+      const cqlQuery = `title = "${title.value}" AND space = ${spaceId}`;
+
       const response =
-        await this.httpClient.sendRequest<ConfluencePagesResponse>({
+        await this.httpClient.sendRequest<ConfluenceSearchResponse>({
           method: "GET",
-          url: "/pages",
+          url: "/search",
           params: {
-            "space-id": spaceId,
-            title: title.value,
+            cql: cqlQuery,
             limit: 1,
           },
         });
@@ -74,8 +76,17 @@ export class PageRepositoryImpl implements PageRepository {
         return null;
       }
 
-      return this.mapToPage(response.results[0]);
+      // Convert search result to page data format using mapper
+      const searchResult = response.results[0];
+      const pageData = this.mapSearchResultToPageData(searchResult, spaceId);
+
+      return this.mapToPage(pageData);
     } catch (error) {
+      // If it's a 404 or no results, return null instead of throwing
+      if (this.isNotFoundError(error)) {
+        return null;
+      }
+
       throw new PageRepositoryError(
         `Failed to find page by title: ${error instanceof Error ? error.message : "Unknown error"}`,
         error,
@@ -210,13 +221,15 @@ export class PageRepositoryImpl implements PageRepository {
   async create(request: CreatePageRequest): Promise<Page> {
     try {
       const response =
-        await this.httpClient.sendRequest<ConfluencePageResponse>({
+        await this.httpClient.sendRequest<ConfluenceV1ContentResponse>({
           method: "POST",
-          url: "/pages",
+          url: "/content",
           data: this.mapCreateRequest(request),
         });
 
-      return this.mapToPage(response);
+      // Convert v1 API response to our expected format, then map to Page
+      const pageData = this.mapV1ContentResponseToPageData(response);
+      return this.mapToPage(pageData);
     } catch (error) {
       throw new PageRepositoryError(
         `Failed to create page: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -415,6 +428,68 @@ export class PageRepositoryImpl implements PageRepository {
     });
   }
 
+  private mapSearchResultToPageData(
+    result: ConfluenceSearchResult,
+    fallbackSpaceId: string,
+  ): ConfluencePageData {
+    return {
+      id: result.content.id,
+      type: result.content.type,
+      status: result.content.status,
+      title: result.content.title,
+      spaceId: result.content.spaceId || fallbackSpaceId,
+      authorId: result.content.authorId,
+      createdAt: result.content.createdAt,
+      version: {
+        number: result.content.version.number,
+        createdAt: result.content.version.createdAt,
+        authorId: result.content.authorId,
+      },
+      _links: {
+        webui: result.content._links.webui,
+        self: result.content._links.self,
+      },
+    };
+  }
+
+  private mapV1ContentResponseToPageData(
+    response: ConfluenceV1ContentResponse,
+  ): ConfluencePageData {
+    return {
+      id: response.id,
+      type: response.type,
+      status: response.status,
+      title: response.title,
+      spaceId: response.space.id,
+      parentId: response.ancestors?.[response.ancestors.length - 1]?.id,
+      authorId: response.version.by.accountId,
+      createdAt: response.version.when,
+      version: {
+        number: response.version.number,
+        message: response.version.message,
+        createdAt: response.version.when,
+        authorId: response.version.by.accountId,
+      },
+      body: response.body
+        ? {
+            storage: response.body.storage
+              ? {
+                  value: response.body.storage.value,
+                  representation: response.body.storage
+                    .representation as "storage",
+                }
+              : undefined,
+          }
+        : undefined,
+      _links: {
+        self: response._links.self,
+        webui: response._links.webui,
+        editui: response._links.edit,
+        tinyui: response._links.tinyui,
+      },
+    };
+  }
+
   private mapToPagination(
     response: ConfluencePagesResponse | ConfluenceSearchResponse,
   ): PaginationInfo {
@@ -451,8 +526,11 @@ export class PageRepositoryImpl implements PageRepository {
 
   private mapCreateRequest(request: CreatePageRequest): unknown {
     const data: Record<string, unknown> = {
-      spaceId: request.spaceId,
+      type: "page",
       title: request.title,
+      space: {
+        id: request.spaceId,
+      },
       body: {
         storage: {
           value: request.content,
@@ -463,7 +541,7 @@ export class PageRepositoryImpl implements PageRepository {
     };
 
     if (request.parentPageId) {
-      data.parentId = request.parentPageId;
+      data.ancestors = [{ id: request.parentPageId }];
     }
 
     return data;
@@ -529,6 +607,41 @@ interface ConfluencePagesResponse {
 }
 
 interface ConfluencePageResponse extends ConfluencePageData {}
+
+interface ConfluenceV1ContentResponse {
+  id: string;
+  type: string;
+  status: string;
+  title: string;
+  space: {
+    id: string;
+    key: string;
+    name: string;
+  };
+  ancestors?: Array<{ id: string }>;
+  version: {
+    by: {
+      type: string;
+      accountId: string;
+      displayName: string;
+    };
+    when: string;
+    number: number;
+    message?: string;
+  };
+  body?: {
+    storage?: {
+      value: string;
+      representation: string;
+    };
+  };
+  _links: {
+    self: string;
+    webui: string;
+    edit: string;
+    tinyui: string;
+  };
+}
 
 interface ConfluencePageData {
   id: string;

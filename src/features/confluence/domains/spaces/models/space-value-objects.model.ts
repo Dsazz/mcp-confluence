@@ -9,7 +9,10 @@ import { z } from "zod";
  */
 const SpaceKeySchema = z
   .string()
-  .regex(/^[A-Z][A-Z0-9]*$/, "Space key must be uppercase alphanumeric");
+  .regex(
+    /^([A-Z][A-Z0-9]*|~[a-zA-Z0-9._-]+)$/,
+    "Space key must be uppercase alphanumeric (global spaces) or start with ~ followed by user ID (personal spaces)",
+  );
 const SpaceNameSchema = z.string().min(1).max(200);
 
 /**
@@ -22,7 +25,7 @@ export class SpaceKey {
     const result = SpaceKeySchema.safeParse(value);
     if (!result.success) {
       throw new InvalidSpaceKeyError(
-        `Invalid space key: ${value}. Must be uppercase alphanumeric starting with a letter.`,
+        `Invalid space key: ${value}. Must be uppercase alphanumeric starting with a letter (global spaces) or start with ~ followed by user ID (personal spaces).`,
         result.error,
       );
     }

@@ -5,6 +5,58 @@ All notable changes to the Confluence MCP Server will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2025-06-23
+
+### Changed
+
+- **Pages Repository Refactoring** (Level 1 Quick Enhancement)
+  - **Code Organization**: Split monolithic 723-line `pages/repositories/index.ts` into 5 focused files
+    - `page.repository.ts` (426 lines) - Core repository implementation
+    - `types.repository.ts` (132 lines) - Confluence API response type definitions
+    - `mappers.repository.ts` (241 lines) - Data mapping utilities between API responses and domain models
+    - `utils.repository.ts` (47 lines) - Helper utilities for CQL queries and error handling
+    - `index.ts` (5 lines) - Clean export file
+  - **Maintainability**: Each file now has single responsibility and focused concerns
+  - **Consistency**: Follows same pattern as spaces repository structure
+  - **Error Handling**: Enhanced error types and validation for better debugging
+
+### Technical Details
+
+#### Repository Structure Improvements
+
+**Before**: Single monolithic file
+
+- `index.ts` - 723 lines containing everything
+
+**After**: Modular, focused files
+
+- `page.repository.ts` - Core repository logic (426 lines)
+- `types.repository.ts` - API response types (132 lines)
+- `mappers.repository.ts` - Data transformation utilities (241 lines)
+- `utils.repository.ts` - Helper functions (47 lines)
+- `index.ts` - Clean exports (5 lines)
+
+#### Benefits
+
+- **Reduced Complexity**: Main implementation file reduced from 723 → 426 lines
+- **Separation of Concerns**: Types, mappers, and utilities in dedicated files
+- **Consistent Naming**: All files follow `*.repository.ts` pattern for repository directory
+- **Improved Maintainability**: Each file has single responsibility
+- **Enhanced Reusability**: Mappers and utilities can be easily tested and reused
+- **Better Navigation**: Developers can quickly find specific functionality
+
+#### Quality Verification
+
+- **Build Process**: All builds pass successfully (`bun run build`)
+- **Type Safety**: TypeScript compilation successful (`bun run typecheck`)
+- **Test Coverage**: All 914+ tests pass with maintained functionality
+- **Code Quality**: Zero linting errors maintained
+- **Functionality**: No breaking changes, all existing functionality preserved
+
+### Breaking Changes
+
+None - All changes are backward compatible and maintain existing functionality.
+
 ## [0.3.2] - 2025-01-09
 
 ### Fixed

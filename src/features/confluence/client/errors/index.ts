@@ -5,6 +5,7 @@ import {
   HttpError,
   NetworkError,
   ServiceUnavailableError,
+  VersionConflictError,
 } from "@confluence/shared/validators";
 
 /**
@@ -37,6 +38,10 @@ export function mapHttpResponseError(
         response,
       );
 
+    case 409:
+      // Handle version conflicts specifically
+      return createVersionConflictFromResponse(response, endpoint);
+
     case 429:
       return new HttpError(
         "Rate limit exceeded. Please try again later.",
@@ -57,6 +62,49 @@ export function mapHttpResponseError(
     default:
       return new HttpError(`HTTP error ${statusCode}`, statusCode, response);
   }
+}
+
+/**
+ * Create a VersionConflictError from API response
+ */
+function createVersionConflictFromResponse(
+  response: unknown,
+  endpoint?: string,
+): ConfluenceError {
+  // Try to extract version information from the response
+  let currentVersion = 0;
+  let providedVersion = 0;
+  let pageId = "unknown";
+
+  if (response && typeof response === "object") {
+    const responseObj = response as Record<string, unknown>;
+
+    // Extract page ID from endpoint if available
+    if (endpoint?.includes("/pages/")) {
+      const match = endpoint.match(/\/pages\/([^\/]+)/);
+      if (match) {
+        pageId = match[1];
+      }
+    }
+
+    // Try to extract version info from error message or response data
+    if (responseObj.message && typeof responseObj.message === "string") {
+      const versionMatch = responseObj.message.match(
+        /version\s+(\d+).*?(\d+)/i,
+      );
+      if (versionMatch) {
+        currentVersion = Number.parseInt(versionMatch[1], 10);
+        providedVersion = Number.parseInt(versionMatch[2], 10);
+      }
+    }
+  }
+
+  return new VersionConflictError(
+    currentVersion,
+    providedVersion,
+    pageId,
+    "Version conflict detected. The page may have been updated by another user. Please refresh and try again.",
+  );
 }
 
 /**
@@ -234,4 +282,5 @@ export {
   AuthenticationError,
   ConfigurationError,
   ServiceUnavailableError,
+  VersionConflictError,
 } from "@confluence/shared/validators";

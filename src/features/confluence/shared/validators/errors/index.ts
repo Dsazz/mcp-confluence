@@ -306,6 +306,24 @@ export class InvalidContentBodyError extends ConfluenceError {
   readonly code = "INVALID_CONTENT_BODY" as const;
 }
 
+/**
+ * Error thrown when there's a version conflict during page updates
+ */
+export class VersionConflictError extends ValidationError {
+  constructor(
+    public readonly currentVersion: number,
+    public readonly providedVersion: number,
+    public readonly pageId: string,
+    message?: string,
+  ) {
+    super(
+      message ||
+        `Version conflict for page ${pageId}: current version is ${currentVersion}, but ${providedVersion} was provided. The page may have been updated by another user.`,
+    );
+    this.name = "VersionConflictError";
+  }
+}
+
 // Error Utility Functions
 export function isConfluenceError(error: unknown): error is ConfluenceError {
   return error instanceof ConfluenceError;

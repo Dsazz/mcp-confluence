@@ -5,6 +5,61 @@ All notable changes to the Confluence MCP Server will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2025-01-09
+
+### Fixed
+
+- **Critical Bug Fixes**
+  - **Space Key Validation**: Fixed overly restrictive regex that rejected Confluence personal space keys
+    - **Before**: Only accepted uppercase alphanumeric global spaces (`QA`, `DEV`, `PROD`)
+    - **After**: Now accepts both global spaces and personal spaces (`~557058336****`)
+    - **Impact**: Users can now access personal spaces without validation errors
+  - **HTTP Timeout Enhancement**: Increased default timeout from 30s to 60s for better reliability
+    - Added configurable timeout via `CONFLUENCE_TIMEOUT` environment variable
+    - **Impact**: Reduced timeout-related failures for slow Confluence instances
+  - **Page Repository Enhancement**: Added comprehensive page existence checking with CQL search
+    - Prevents duplicate page creation by checking existing pages before creation
+    - **Impact**: Improved data integrity and user experience
+
+### Technical Details
+
+#### Space Key Validation Fix
+
+- **File**: `src/features/confluence/domains/spaces/models/space-value-objects.model.ts`
+- **Regex Update**: `^([A-Z][A-Z0-9]*|~[a-zA-Z0-9._-]+)$`
+- **Error Message**: Enhanced to explain both global and personal space formats
+- **Test Coverage**: Added comprehensive test cases for personal space validation
+
+#### HTTP Client Improvements
+
+- **File**: `src/features/confluence/client/http/index.ts`
+- **Default Timeout**: Increased from 30s to 60s
+- **Environment Variable**: `CONFLUENCE_TIMEOUT` for custom timeout configuration
+- **Backward Compatibility**: Maintains existing behavior with improved defaults
+
+#### Quality Verification
+
+- **Build Process**: All builds pass successfully (`bun run build`)
+- **Type Safety**: TypeScript compilation successful (`bun run typecheck`)
+- **Test Coverage**: 527+ tests passing with new validation scenarios
+- **Code Quality**: Zero linting errors maintained
+
+### Breaking Changes
+
+None - All changes are backward compatible.
+
+## [0.3.1] - 2025-06-07
+
+### Changed
+
+- **Documentation Update**
+  - Updated README.md to reflect v0.3.0 architectural changes
+  - Documented 9 strategic MCP tools with enhanced workflow capabilities
+  - Updated tool examples for renamed `confluence_search` (was `confluence_search_pages`)
+  - Added v0.3.0 feature highlights and domain-based architecture documentation
+  - Removed deprecated task creation tool documentation
+  - Enhanced project structure documentation with new domain organization
+
 ## [0.3.0] - 2025-06-07
 
 ### Changed

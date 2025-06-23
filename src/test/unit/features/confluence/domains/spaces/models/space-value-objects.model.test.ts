@@ -33,6 +33,22 @@ describe("Space Value Objects", () => {
         }
       });
 
+      test("should accept personal space keys", () => {
+        const validPersonalKeys = [
+          "~user123",
+          "~55705833696a78aa204c7d96ee7b3ed24248f0",
+          "~testuser",
+          "~a1b2c3",
+          "~USER123",
+          "~123456",
+        ];
+
+        for (const key of validPersonalKeys) {
+          const spaceKey = new SpaceKey(key);
+          expect(spaceKey.value).toBe(key);
+        }
+      });
+
       test("should reject invalid space keys", () => {
         const invalidKeys = [
           "", // empty
@@ -53,13 +69,13 @@ describe("Space Value Objects", () => {
 
       test("should provide meaningful error messages", () => {
         expect(() => new SpaceKey("test")).toThrow(
-          "Invalid space key: test. Must be uppercase alphanumeric starting with a letter.",
+          "Invalid space key: test. Must be uppercase alphanumeric starting with a letter (global spaces) or start with ~ followed by user ID (personal spaces).",
         );
         expect(() => new SpaceKey("1TEST")).toThrow(
-          "Invalid space key: 1TEST. Must be uppercase alphanumeric starting with a letter.",
+          "Invalid space key: 1TEST. Must be uppercase alphanumeric starting with a letter (global spaces) or start with ~ followed by user ID (personal spaces).",
         );
         expect(() => new SpaceKey("TEST-1")).toThrow(
-          "Invalid space key: TEST-1. Must be uppercase alphanumeric starting with a letter.",
+          "Invalid space key: TEST-1. Must be uppercase alphanumeric starting with a letter (global spaces) or start with ~ followed by user ID (personal spaces).",
         );
       });
     });

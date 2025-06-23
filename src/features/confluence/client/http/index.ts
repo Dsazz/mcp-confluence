@@ -70,7 +70,9 @@ export abstract class BaseConfluenceHttpClient implements ConfluenceHttpClient {
     this.options = {
       apiVersion: options.apiVersion,
       customBasePath: options.customBasePath || "",
-      timeout: options.timeout || 30000,
+      timeout:
+        options.timeout ||
+        Number.parseInt(process.env.CONFLUENCE_TIMEOUT || "60000", 10),
       retryAttempts: options.retryAttempts || 3,
       retryDelay: options.retryDelay || 1000,
     };

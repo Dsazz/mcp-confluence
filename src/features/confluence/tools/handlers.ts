@@ -66,14 +66,16 @@ export interface DomainHandlers {
  */
 export function createDomainHandlers(): DomainHandlers {
   try {
-    // Initialize configuration and HTTP client
+    // Initialize configuration and HTTP clients
     const config = createConfluenceConfigFromEnv();
-    const httpClient = createHttpClient(config, { apiVersion: "v2" });
+    const v2Client = createHttpClient(config, { apiVersion: "v2" });
+    const v1Client = createHttpClient(config, { apiVersion: "v1" });
 
     // Initialize repositories
-    const spaceRepository = new SpaceRepositoryImpl(httpClient);
-    const pageRepository = new PageRepositoryImpl(httpClient);
-    const searchRepository = new SearchRepositoryImpl(httpClient);
+    // V2 client for spaces/pages CRUD; V1 client for CQL search and legacy content endpoints
+    const spaceRepository = new SpaceRepositoryImpl(v2Client);
+    const pageRepository = new PageRepositoryImpl(v2Client, v1Client);
+    const searchRepository = new SearchRepositoryImpl(v1Client);
 
     // Initialize use cases
     const getAllSpacesUseCase = new GetAllSpacesUseCase(spaceRepository);

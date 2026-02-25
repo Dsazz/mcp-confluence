@@ -13,7 +13,7 @@ export class ConfluenceHttpClientV2 extends BaseConfluenceHttpClient {
     super(config, { ...options, apiVersion: "v2" });
     this.baseUrl =
       this.options.customBasePath ||
-      `${config.hostUrl.replace(/\/$/, "")}/api/v2`;
+      `${config.hostUrl.replace(/\/$/, "")}/wiki/api/v2`;
   }
 
   /**

@@ -82,7 +82,7 @@ export class ConfluenceConfig {
    * Gets the base API URL for Confluence v2
    */
   get baseApiV2Url(): string {
-    return `${this.hostUrl.replace(/\/$/, "")}/api/v2`;
+    return `${this.hostUrl.replace(/\/$/, "")}/wiki/api/v2`;
   }
 
   private isValidUrl(url: string): boolean {

@@ -23,7 +23,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
       const response =
         await this.httpClient.sendRequest<ConfluenceSpacesResponse>({
           method: "GET",
-          url: "/space",
+          url: "/spaces",
           params: this.buildQueryParams(params),
         });
 
@@ -46,7 +46,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
       const response =
         await this.httpClient.sendRequest<ConfluenceSpaceResponse>({
           method: "GET",
-          url: `/space/${key.value}`,
+          url: `/spaces/${key.value}`,
         });
 
       return this.mapToSpace(response);
@@ -68,7 +68,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
       const response =
         await this.httpClient.sendRequest<ConfluenceSpaceResponse>({
           method: "GET",
-          url: `/space/${id}`,
+          url: `/spaces/${id}`,
         });
 
       return this.mapToSpace(response);
@@ -90,7 +90,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
       const response =
         await this.httpClient.sendRequest<ConfluenceSpaceResponse>({
           method: "POST",
-          url: "/space",
+          url: "/spaces",
           data: this.mapCreateRequest(request),
         });
 
@@ -111,7 +111,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
       const response =
         await this.httpClient.sendRequest<ConfluenceSpaceResponse>({
           method: "PUT",
-          url: `/space/${key.value}`,
+          url: `/spaces/${key.value}`,
           data: this.mapUpdateRequest(updates),
         });
 
@@ -128,7 +128,7 @@ export class SpaceRepositoryImpl implements SpaceRepository {
     try {
       await this.httpClient.sendRequest<void>({
         method: "DELETE",
-        url: `/space/${key.value}`,
+        url: `/spaces/${key.value}`,
       });
     } catch (error) {
       throw new SpaceRepositoryError(

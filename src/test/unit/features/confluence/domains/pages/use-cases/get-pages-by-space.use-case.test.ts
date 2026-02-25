@@ -28,7 +28,6 @@ describe("GetPagesBySpaceUseCase", () => {
       update: async () => pagesMockFactory.createPage(),
       delete: async () => {},
       exists: async () => false,
-      search: async () => ({ pages: [], pagination: { size: 0, start: 0 } }),
       getVersion: async () => pagesMockFactory.createPageVersion(),
       getCommentCount: async () => 0,
     } as unknown as PageRepository;

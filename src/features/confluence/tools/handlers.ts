@@ -6,8 +6,8 @@
 
 import { logger } from "@core/logging";
 
-import { createHttpClient } from "../client";
 import { createConfluenceConfigFromEnv } from "../client/config";
+import { createHttpClient } from "../client/http";
 import {
   CreatePageHandler,
   CreatePageUseCase,
@@ -66,14 +66,15 @@ export interface DomainHandlers {
  */
 export function createDomainHandlers(): DomainHandlers {
   try {
-    // Initialize configuration and HTTP client
+    // Initialize configuration and HTTP clients (one per API version)
     const config = createConfluenceConfigFromEnv();
-    const httpClient = createHttpClient(config, { apiVersion: "v2" });
+    const v2Client = createHttpClient(config, { apiVersion: "v2" });
+    const v1Client = createHttpClient(config, { apiVersion: "v1" });
 
-    // Initialize repositories
-    const spaceRepository = new SpaceRepositoryImpl(httpClient);
-    const pageRepository = new PageRepositoryImpl(httpClient);
-    const searchRepository = new SearchRepositoryImpl(httpClient);
+    // Each repository uses a single API version
+    const spaceRepository = new SpaceRepositoryImpl(v2Client);
+    const pageRepository = new PageRepositoryImpl(v2Client);
+    const searchRepository = new SearchRepositoryImpl(v1Client);
 
     // Initialize use cases
     const getAllSpacesUseCase = new GetAllSpacesUseCase(spaceRepository);
@@ -82,7 +83,7 @@ export function createDomainHandlers(): DomainHandlers {
     const getPageUseCase = new GetPageByIdUseCase(pageRepository);
     const createPageUseCase = new CreatePageUseCase(pageRepository);
     const updatePageUseCase = new UpdatePageUseCase(pageRepository);
-    const searchPagesUseCase = new SearchPagesUseCase(pageRepository);
+    const searchPagesUseCase = new SearchPagesUseCase(searchRepository);
     const getPagesBySpaceUseCase = new GetPagesBySpaceUseCase(pageRepository);
     const getChildPagesUseCase = new GetChildPagesUseCase(pageRepository);
     const searchContentUseCase = new SearchContentUseCase(searchRepository);

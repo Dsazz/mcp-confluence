@@ -4,6 +4,7 @@
  * Factory functions for creating page use-cases with proper dependencies
  */
 
+import type { SearchRepository } from "@confluence/search";
 import type { SpaceRepository } from "../../spaces/models";
 import type { PageRepository } from "../models";
 import {
@@ -23,6 +24,7 @@ import {
 export interface PageUseCaseDependencies {
   pageRepository: PageRepository;
   spaceRepository?: SpaceRepository;
+  searchRepository: SearchRepository;
 }
 
 /**
@@ -76,7 +78,7 @@ export function createDeletePageUseCase(
 export function createSearchPagesUseCase(
   dependencies: PageUseCaseDependencies,
 ): SearchPagesUseCase {
-  return new SearchPagesUseCase(dependencies.pageRepository);
+  return new SearchPagesUseCase(dependencies.searchRepository);
 }
 
 /**

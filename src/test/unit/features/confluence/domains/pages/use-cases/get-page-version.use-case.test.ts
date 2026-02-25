@@ -46,17 +46,6 @@ describe("GetPageVersionUseCase", () => {
       exists: () => Promise.resolve(false),
       getVersion: () => Promise.resolve(pagesMockFactory.createPageVersion()),
       getCommentCount: () => Promise.resolve(0),
-      search: () =>
-        Promise.resolve({
-          pages: [],
-          pagination: {
-            total: 0,
-            limit: 25,
-            start: 0,
-            size: 0,
-            hasMore: false,
-          },
-        }),
     };
 
     useCase = new GetPageVersionUseCase(mockPageRepository);

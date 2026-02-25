@@ -188,6 +188,24 @@ export function mapCreateRequest(request: CreatePageRequest): unknown {
   return data;
 }
 
+export function mapCreateRequestV2(request: CreatePageRequest): unknown {
+  const data: Record<string, unknown> = {
+    spaceId: request.spaceId,
+    title: request.title,
+    status: request.status || "current",
+    body: {
+      representation: request.contentFormat || "storage",
+      value: request.content,
+    },
+  };
+
+  if (request.parentPageId) {
+    data.parentId = request.parentPageId;
+  }
+
+  return data;
+}
+
 export function mapUpdateRequest(updates: UpdatePageRequest): unknown {
   const data: Record<string, unknown> = {
     id: updates.pageId,

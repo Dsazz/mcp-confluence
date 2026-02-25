@@ -1,42 +1,67 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import type {
-  PageRepository,
-  SearchPagesRequest,
-} from "@features/confluence/domains/pages/models";
+import type { SearchPagesRequest } from "@features/confluence/domains/pages/models";
 import { SearchPagesUseCase } from "@features/confluence/domains/pages/use-cases/search-pages.use-case";
+import type {
+  SearchRepository,
+  SearchResult,
+} from "@features/confluence/domains/search/models";
 import { PageError } from "@features/confluence/shared/validators";
 import { PagesMockFactory } from "@test/__mocks__/v2/domains/pages/pages-mock-factory";
 
+function createMockSearchResult(
+  overrides: Partial<{
+    id: string;
+    title: string;
+    status: string;
+    spaceId: string;
+  }> = {},
+): SearchResult {
+  return {
+    content: {
+      id: overrides.id ?? "page-123",
+      type: "page",
+      status: overrides.status ?? "current",
+      title: overrides.title ?? "Test Page",
+      spaceId: overrides.spaceId ?? "space-1",
+      authorId: "author-1",
+      createdAt: new Date("2024-01-01T00:00:00Z"),
+      updatedAt: new Date("2024-01-01T00:00:00Z"),
+      version: { number: 1, createdAt: new Date("2024-01-01T00:00:00Z") },
+      links: { webui: "/test", self: "/api/test" },
+    },
+    score: 1.0,
+  };
+}
+
 describe("SearchPagesUseCase", () => {
   let useCase: SearchPagesUseCase;
-  let mockPageRepository: PageRepository;
+  let mockSearchRepository: SearchRepository;
   let pagesMockFactory: PagesMockFactory;
 
   beforeEach(() => {
     pagesMockFactory = new PagesMockFactory();
 
-    // Mock PageRepository with all required methods
-    mockPageRepository = {
-      findById: async () => null,
-      findByTitle: async () => null,
-      findBySpaceId: async () => ({
-        pages: [],
-        pagination: { size: 0, start: 0 },
+    mockSearchRepository = {
+      searchContent: async () => ({
+        results: [],
+        pagination: { start: 0, limit: 25, size: 0, hasMore: false },
       }),
-      findChildren: async () => ({
-        pages: [],
-        pagination: { size: 0, start: 0 },
+      advancedSearch: async () => ({
+        results: [],
+        pagination: { start: 0, limit: 25, size: 0, hasMore: false },
       }),
-      create: async () => pagesMockFactory.createPage(),
-      update: async () => pagesMockFactory.createPage(),
-      delete: async () => {},
-      exists: async () => false,
-      search: async () => ({ pages: [], pagination: { size: 0, start: 0 } }),
-      getVersion: async () => pagesMockFactory.createPageVersion(),
-      getCommentCount: async () => 0,
-    } as unknown as PageRepository;
+      searchInSpace: async () => ({
+        results: [],
+        pagination: { start: 0, limit: 25, size: 0, hasMore: false },
+      }),
+      searchByType: async () => ({
+        results: [],
+        pagination: { start: 0, limit: 25, size: 0, hasMore: false },
+      }),
+      getSearchSuggestions: async () => [],
+    };
 
-    useCase = new SearchPagesUseCase(mockPageRepository);
+    useCase = new SearchPagesUseCase(mockSearchRepository);
   });
 
   describe("Successful Search", () => {
@@ -45,13 +70,13 @@ describe("SearchPagesUseCase", () => {
       const request: SearchPagesRequest =
         pagesMockFactory.createSearchPagesRequest();
       const searchResults = [
-        pagesMockFactory.createPageSummary(),
-        pagesMockFactory.createPageSummary(),
+        createMockSearchResult({ id: "page-1", title: "Page One" }),
+        createMockSearchResult({ id: "page-2", title: "Page Two" }),
       ];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 2 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -60,8 +85,10 @@ describe("SearchPagesUseCase", () => {
 
       // Assert
       expect(result).toBeDefined();
-      expect(result.pages).toEqual(searchResults);
-      expect(result.pagination).toEqual(pagination);
+      expect(result.pages).toHaveLength(2);
+      expect(result.pagination.total).toBe(2);
+      expect(result.pagination.start).toBe(pagination.start);
+      expect(result.pagination.hasMore).toBe(pagination.hasMore);
       expect(result.query).toBe(request.query);
       expect(result.statistics).toBeDefined();
       expect(result.statistics.totalPages).toBe(2);
@@ -73,8 +100,8 @@ describe("SearchPagesUseCase", () => {
         pagesMockFactory.createSearchPagesRequest();
       const pagination = pagesMockFactory.createPaginationInfo({ total: 0 });
 
-      mockPageRepository.search = async () => ({
-        pages: [],
+      mockSearchRepository.searchContent = async () => ({
+        results: [],
         pagination,
       });
 
@@ -95,8 +122,8 @@ describe("SearchPagesUseCase", () => {
         limit: 10,
         start: 20,
       };
-      const searchResults = Array.from({ length: 10 }, () =>
-        pagesMockFactory.createPageSummary(),
+      const searchResults = Array.from({ length: 10 }, (_, i) =>
+        createMockSearchResult({ id: `page-${i}` }),
       );
       const pagination = pagesMockFactory.createPaginationInfo({
         total: 100,
@@ -106,8 +133,8 @@ describe("SearchPagesUseCase", () => {
         hasMore: true,
       });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -127,11 +154,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         spaceKey: "TEST",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -150,11 +177,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         orderBy: "created",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -174,7 +201,7 @@ describe("SearchPagesUseCase", () => {
         pagesMockFactory.createSearchPagesRequest();
       const repositoryError = new Error("Search service unavailable");
 
-      mockPageRepository.search = async () => {
+      mockSearchRepository.searchContent = async () => {
         throw repositoryError;
       };
 
@@ -188,7 +215,7 @@ describe("SearchPagesUseCase", () => {
         pagesMockFactory.createSearchPagesRequest();
       const repositoryError = new Error("Search service unavailable");
 
-      mockPageRepository.search = async () => {
+      mockSearchRepository.searchContent = async () => {
         throw repositoryError;
       };
 
@@ -213,14 +240,14 @@ describe("SearchPagesUseCase", () => {
       const request: SearchPagesRequest =
         pagesMockFactory.createSearchPagesRequest();
       const searchResults = [
-        pagesMockFactory.createPageSummary({ status: "current" }),
-        pagesMockFactory.createPageSummary({ status: "draft" }),
-        pagesMockFactory.createPageSummary({ status: "trashed" }),
+        createMockSearchResult({ id: "p1", status: "current" }),
+        createMockSearchResult({ id: "p2", status: "draft" }),
+        createMockSearchResult({ id: "p3", status: "trashed" }),
       ];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 3 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -241,8 +268,8 @@ describe("SearchPagesUseCase", () => {
         pagesMockFactory.createSearchPagesRequest();
       const pagination = pagesMockFactory.createPaginationInfo({ total: 0 });
 
-      mockPageRepository.search = async () => ({
-        pages: [],
+      mockSearchRepository.searchContent = async () => ({
+        results: [],
         pagination,
       });
 
@@ -261,13 +288,13 @@ describe("SearchPagesUseCase", () => {
       // Arrange
       const request: SearchPagesRequest =
         pagesMockFactory.createSearchPagesRequest();
-      const searchResults = Array.from({ length: 50 }, () =>
-        pagesMockFactory.createPageSummary({ status: "current" }),
+      const searchResults = Array.from({ length: 50 }, (_, i) =>
+        createMockSearchResult({ id: `page-${i}`, status: "current" }),
       );
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1000 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -296,11 +323,11 @@ describe("SearchPagesUseCase", () => {
           ...pagesMockFactory.createSearchPagesRequest(),
           query,
         };
-        const searchResults = [pagesMockFactory.createPageSummary()];
+        const searchResults = [createMockSearchResult()];
         const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-        mockPageRepository.search = async () => ({
-          pages: searchResults,
+        mockSearchRepository.searchContent = async () => ({
+          results: searchResults,
           pagination,
         });
 
@@ -319,11 +346,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         query: "search with @#$%^&*() characters",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -342,11 +369,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         query: longQuery,
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -365,13 +392,13 @@ describe("SearchPagesUseCase", () => {
         type: "page",
       };
       const searchResults = [
-        pagesMockFactory.createPageSummary(),
-        pagesMockFactory.createPageSummary(),
+        createMockSearchResult({ id: "page-1" }),
+        createMockSearchResult({ id: "page-2" }),
       ];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 2 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -390,13 +417,13 @@ describe("SearchPagesUseCase", () => {
       const request: SearchPagesRequest =
         pagesMockFactory.createSearchPagesRequest();
       const searchResults = [
-        pagesMockFactory.createPageSummary({ spaceId: "SPACE1" }),
-        pagesMockFactory.createPageSummary({ spaceId: "SPACE2" }),
+        createMockSearchResult({ id: "p1", spaceId: "SPACE1" }),
+        createMockSearchResult({ id: "p2", spaceId: "SPACE2" }),
       ];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 2 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -416,11 +443,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         orderBy: "relevance",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -438,11 +465,11 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         orderBy: "modified",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -460,8 +487,8 @@ describe("SearchPagesUseCase", () => {
         ...pagesMockFactory.createSearchPagesRequest(),
         limit: 250,
       };
-      const searchResults = Array.from({ length: 250 }, () =>
-        pagesMockFactory.createPageSummary(),
+      const searchResults = Array.from({ length: 250 }, (_, i) =>
+        createMockSearchResult({ id: `page-${i}` }),
       );
       const pagination = pagesMockFactory.createPaginationInfo({
         total: 5000,
@@ -469,8 +496,8 @@ describe("SearchPagesUseCase", () => {
         limit: 250,
       });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 
@@ -488,11 +515,11 @@ describe("SearchPagesUseCase", () => {
       const request: SearchPagesRequest = {
         query: "minimal search",
       };
-      const searchResults = [pagesMockFactory.createPageSummary()];
+      const searchResults = [createMockSearchResult()];
       const pagination = pagesMockFactory.createPaginationInfo({ total: 1 });
 
-      mockPageRepository.search = async () => ({
-        pages: searchResults,
+      mockSearchRepository.searchContent = async () => ({
+        results: searchResults,
         pagination,
       });
 

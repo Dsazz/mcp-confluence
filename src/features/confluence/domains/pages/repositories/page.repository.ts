@@ -12,27 +12,21 @@ import type {
   PageTitle,
   PageVersion,
   PaginationInfo,
-  SearchPagesRequest,
   UpdatePageRequest,
 } from "../models";
 import {
-  mapCreateRequest,
-  mapSearchResultToPageData,
-  mapSearchResultToPageSummary,
+  mapCreateRequestV2,
   mapToPage,
   mapToPageSummary,
   mapToPagination,
   mapUpdateRequest,
-  mapV1ContentResponseToPageData,
 } from "./mappers.repository";
 import type {
   ConfluenceCommentsResponse,
   ConfluencePageResponse,
   ConfluencePagesResponse,
-  ConfluenceSearchResponse,
-  ConfluenceV1ContentResponse,
 } from "./types.repository";
-import { buildCQLQuery, isNotFoundError } from "./utils.repository";
+import { isNotFoundError } from "./utils.repository";
 
 /**
  * Implementation of PageRepository using Confluence HTTP client
@@ -78,16 +72,13 @@ export class PageRepositoryImpl implements PageRepository {
 
   async findByTitle(spaceId: string, title: PageTitle): Promise<Page | null> {
     try {
-      // Use CQL search to find pages by title in a specific space
-      // This is more reliable with the v1 API
-      const cqlQuery = `title = "${title.value}" AND space = ${spaceId}`;
-
       const response =
-        await this.httpClient.sendRequest<ConfluenceSearchResponse>({
+        await this.httpClient.sendRequest<ConfluencePagesResponse>({
           method: "GET",
-          url: "/search",
+          url: "/pages",
           params: {
-            cql: cqlQuery,
+            title: title.value,
+            "space-id": spaceId,
             limit: 1,
           },
         });
@@ -96,13 +87,8 @@ export class PageRepositoryImpl implements PageRepository {
         return null;
       }
 
-      // Convert search result to page data format using mapper
-      const searchResult = response.results[0];
-      const pageData = mapSearchResultToPageData(searchResult, spaceId);
-
-      return mapToPage(pageData);
+      return mapToPage(response.results[0]);
     } catch (error) {
-      // If it's a 404 or no results, return null instead of throwing
       if (isNotFoundError(error)) {
         return null;
       }
@@ -188,66 +174,16 @@ export class PageRepositoryImpl implements PageRepository {
     }
   }
 
-  async search(
-    query: SearchPagesRequest,
-  ): Promise<{ pages: PageSummary[]; pagination: PaginationInfo }> {
-    try {
-      const params: Record<string, string | number> = {
-        cql: buildCQLQuery(query),
-      };
-
-      if (query.limit) {
-        params.limit = query.limit;
-      }
-
-      if (query.start) {
-        params.start = query.start;
-      }
-
-      const response =
-        await this.httpClient.sendRequest<ConfluenceSearchResponse>({
-          method: "GET",
-          url: "/search",
-          params,
-        });
-
-      const pages = response.results
-        .filter(
-          (result) =>
-            result.content.type === "page" ||
-            result.content.type === "blogpost",
-        )
-        .map((result) => mapSearchResultToPageSummary(result));
-
-      const pagination: PaginationInfo = {
-        start: response.start || 0,
-        limit: response.limit || 25,
-        size: pages.length,
-        hasMore: response.size === (response.limit || 25),
-        total: response.totalSize,
-      };
-
-      return { pages, pagination };
-    } catch (error) {
-      throw new PageRepositoryError(
-        `Failed to search pages: ${error instanceof Error ? error.message : "Unknown error"}`,
-        error,
-      );
-    }
-  }
-
   async create(request: CreatePageRequest): Promise<Page> {
     try {
       const response =
-        await this.httpClient.sendRequest<ConfluenceV1ContentResponse>({
+        await this.httpClient.sendRequest<ConfluencePageResponse>({
           method: "POST",
-          url: "/content",
-          data: mapCreateRequest(request),
+          url: "/pages",
+          data: mapCreateRequestV2(request),
         });
 
-      // Convert v1 API response to our expected format, then map to Page
-      const pageData = mapV1ContentResponseToPageData(response);
-      return mapToPage(pageData);
+      return mapToPage(response);
     } catch (error) {
       throw new PageRepositoryError(
         `Failed to create page: ${error instanceof Error ? error.message : "Unknown error"}`,

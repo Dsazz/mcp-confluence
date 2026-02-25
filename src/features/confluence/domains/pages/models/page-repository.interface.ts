@@ -1,6 +1,5 @@
 import type {
   CreatePageRequest,
-  SearchPagesRequest,
   UpdatePageRequest,
 } from "./page-schemas.model";
 import type { PageId, PageTitle } from "./page-value-objects.model";
@@ -27,9 +26,6 @@ export interface PageRepository {
   findChildren(
     parentId: PageId,
     options?: { limit?: number; start?: number },
-  ): Promise<{ pages: PageSummary[]; pagination: PaginationInfo }>;
-  search(
-    query: SearchPagesRequest,
   ): Promise<{ pages: PageSummary[]; pagination: PaginationInfo }>;
   create(page: CreatePageRequest): Promise<Page>;
   update(id: PageId, updates: UpdatePageRequest): Promise<Page>;

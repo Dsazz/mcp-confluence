@@ -219,4 +219,3 @@ export function createHttpClient(
 
 // Re-export utilities for convenience
 export * from "./utils";
-export * from "./dual-client";

@@ -6,8 +6,8 @@
 
 import { logger } from "@core/logging";
 
-import { createHttpClient } from "../client";
 import { createConfluenceConfigFromEnv } from "../client/config";
+import { createDualHttpClient } from "../client/http/dual-client";
 import {
   CreatePageHandler,
   CreatePageUseCase,
@@ -66,16 +66,14 @@ export interface DomainHandlers {
  */
 export function createDomainHandlers(): DomainHandlers {
   try {
-    // Initialize configuration and HTTP clients
+    // Initialize configuration and HTTP client
     const config = createConfluenceConfigFromEnv();
-    const v2Client = createHttpClient(config, { apiVersion: "v2" });
-    const v1Client = createHttpClient(config, { apiVersion: "v1" });
+    const httpClient = createDualHttpClient(config);
 
     // Initialize repositories
-    // V2 client for spaces/pages CRUD; V1 client for CQL search and legacy content endpoints
-    const spaceRepository = new SpaceRepositoryImpl(v2Client);
-    const pageRepository = new PageRepositoryImpl(v2Client, v1Client);
-    const searchRepository = new SearchRepositoryImpl(v1Client);
+    const spaceRepository = new SpaceRepositoryImpl(httpClient);
+    const pageRepository = new PageRepositoryImpl(httpClient);
+    const searchRepository = new SearchRepositoryImpl(httpClient);
 
     // Initialize use cases
     const getAllSpacesUseCase = new GetAllSpacesUseCase(spaceRepository);

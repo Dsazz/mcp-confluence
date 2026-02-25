@@ -38,14 +38,7 @@ import { buildCQLQuery, isNotFoundError } from "./utils.repository";
  * Implementation of PageRepository using Confluence HTTP client
  */
 export class PageRepositoryImpl implements PageRepository {
-  private readonly v1Client: ConfluenceHttpClient;
-
-  constructor(
-    private httpClient: ConfluenceHttpClient,
-    v1Client?: ConfluenceHttpClient,
-  ) {
-    this.v1Client = v1Client || httpClient;
-  }
+  constructor(private httpClient: ConfluenceHttpClient) {}
 
   async findById(
     id: PageId,
@@ -90,7 +83,7 @@ export class PageRepositoryImpl implements PageRepository {
       const cqlQuery = `title = "${title.value}" AND space = ${spaceId}`;
 
       const response =
-        await this.v1Client.sendRequest<ConfluenceSearchResponse>({
+        await this.httpClient.sendRequest<ConfluenceSearchResponse>({
           method: "GET",
           url: "/search",
           params: {
@@ -212,7 +205,7 @@ export class PageRepositoryImpl implements PageRepository {
       }
 
       const response =
-        await this.v1Client.sendRequest<ConfluenceSearchResponse>({
+        await this.httpClient.sendRequest<ConfluenceSearchResponse>({
           method: "GET",
           url: "/search",
           params,
@@ -246,7 +239,7 @@ export class PageRepositoryImpl implements PageRepository {
   async create(request: CreatePageRequest): Promise<Page> {
     try {
       const response =
-        await this.v1Client.sendRequest<ConfluenceV1ContentResponse>({
+        await this.httpClient.sendRequest<ConfluenceV1ContentResponse>({
           method: "POST",
           url: "/content",
           data: mapCreateRequest(request),

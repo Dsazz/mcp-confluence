@@ -25,17 +25,17 @@ interface ConfluenceSearchResponse {
         key: string;
         name: string;
       };
-      history: {
-        createdBy: {
+      history?: {
+        createdBy?: {
           accountId: string;
           displayName?: string;
         };
-        createdDate: string;
-        lastUpdated: {
+        createdDate?: string;
+        lastUpdated?: {
           when: string;
         };
       };
-      version: {
+      version?: {
         number: number;
         when: string;
       };
@@ -296,13 +296,13 @@ export class SearchRepositoryImpl implements SearchRepository {
         spaceId: item.content.space?.id,
         spaceKey: item.content.space?.key,
         spaceName: item.content.space?.name,
-        authorId: item.content.history.createdBy.accountId,
-        authorDisplayName: item.content.history.createdBy.displayName,
-        createdAt: item.content.history.createdDate,
-        updatedAt: item.content.history.lastUpdated.when,
+        authorId: item.content.history?.createdBy?.accountId || "",
+        authorDisplayName: item.content.history?.createdBy?.displayName,
+        createdAt: item.content.history?.createdDate || "",
+        updatedAt: item.content.history?.lastUpdated?.when || "",
         version: {
-          number: item.content.version.number,
-          createdAt: item.content.version.when,
+          number: item.content.version?.number || 0,
+          createdAt: item.content.version?.when || "",
         },
         links: {
           webui: item.content._links.webui,

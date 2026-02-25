@@ -168,7 +168,7 @@ describe("Domain Handlers Factory", () => {
 
       // Verify the function follows dependency injection patterns
       expect(functionString).toContain("config");
-      expect(functionString).toContain("Client");
+      expect(functionString).toContain("httpClient");
       expect(functionString).toContain("Repository");
       expect(functionString).toContain("UseCase");
       expect(functionString).toContain("Handler");
@@ -182,7 +182,7 @@ describe("Domain Handlers Factory", () => {
 
       // Verify the dependency chain: config -> client -> repository -> usecase -> handler
       expect(functionString).toContain("createConfluenceConfigFromEnv");
-      expect(functionString).toContain("createHttpClient");
+      expect(functionString).toContain("createDualHttpClient");
     });
   });
 

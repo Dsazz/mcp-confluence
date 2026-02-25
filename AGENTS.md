@@ -48,3 +48,4 @@ The server will respond with a JSON-RPC response on stdout; logs go to stderr.
 - The lockfile is `bun.lock` (not `bun.lockb`). Always use `bun install` (never npm/yarn/pnpm).
 - `bun run inspect` launches the MCP Inspector on ports 5175 and 3002. It requires a prior `bun run build` (the inspect script runs the built `dist/index.js`).
 - The project uses **Biome** (not ESLint/Prettier) for linting and formatting.
+- The Confluence API may return 403 from cloud VMs due to IP-based access restrictions on the Confluence instance. This does not affect unit tests or server startup — only live API calls. The MCP server will still start, register tools, and return properly formatted error responses.
